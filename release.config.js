@@ -12,7 +12,7 @@ module.exports = {
       path: '@semantic-release/git',
       message: `\
 [<%= nextRelease.version %>]\
-(https://github.com/fartts/fartts/tree/<%= nextRelease.version%>)\
+(https://github.com/fartts/superfluity/tree/<%= nextRelease.version%>)\
  - <%= new Date().toLocaleDateString('en-US', {
   year: 'numeric',
   month: 'short',
@@ -20,6 +20,8 @@ module.exports = {
   hour: 'numeric',
   minute: 'numeric',
 })%> [skip ci]
+<%=nextRelease.gitTag%>
+<%=nextRelease.gitHead%>
 <%=nextRelease.notes%>`,
     },
   ],
