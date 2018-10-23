@@ -24,6 +24,7 @@
       "path": "cz-conventional-changelog"
     }
   },
+  "dependencies": {},
   "devDependencies": {
     "@babel/core": "7.1.2",
     "@babel/preset-typescript": "7.1.0",
