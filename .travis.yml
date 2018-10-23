@@ -1,0 +1,61 @@
+language: node_js
+
+node_js:
+  - 8.12.0
+
+cache: yarn
+
+before_install:
+  # get the right npm version
+  - NPM_VERSION=`node -pe "require('./package.json').engines.npm"`
+  - if [ `npm --version` != "$NPM_VERSION" ]; then
+    npm install --global npm@${NPM_VERSION};
+    fi
+
+  # get the right yarn version
+  - YARN_VERSION=`node -pe "require('./package.json').engines.yarn"`
+  - if [ `yarn --version` != "$YARN_VERSION" ]; then
+    curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version $YARN_VERSION;
+    export PATH=$HOME/.yarn/bin:$PATH;
+    fi
+
+before_script:
+  # code climate's coverage reporter
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
+    > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - './cc-test-reporter before-build'
+
+script:
+  - yarn lint
+  - yarn test
+
+after_success:
+  - test $TRAVIS_PULL_REQUEST != "false" && npx semantic-release-github-pr
+
+before_deploy:
+  - yarn build
+
+deploy:
+  # deploy a git tag, release notes, bump package.json, update READMEs
+  - provider: script
+    skip_cleanup: true
+    script: npx semantic-release
+    on:
+      branch: master
+
+  # deploy the site
+  - provider: pages
+    repo: mysterycommand/superfluity
+    target_branch: gh-pages
+    github_token: '$GH_TOKEN'
+    allow_empty_commit: true
+    skip_cleanup: true
+    keep_history: true
+    local_dir: dist/
+    on:
+      branch: master
+
+after_script:
+  # report coverage
+  - './cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT'
