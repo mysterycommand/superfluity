@@ -46,7 +46,7 @@ deploy:
 
   # deploy the site
   - provider: pages
-    repo: mysterycommand/superfluity
+    repo: fartts/superfluity
     target_branch: gh-pages
     github_token: '$GH_TOKEN'
     allow_empty_commit: true
