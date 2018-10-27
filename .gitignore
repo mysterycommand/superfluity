@@ -59,3 +59,10 @@ typings/
 
 # next.js build output
 .next
+
+# Parcel build files
+.cache/
+dist/
+
+# VS Code settings
+.vscode/
