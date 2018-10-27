@@ -9,12 +9,12 @@ function randomBytes(length = 0): Buffer {
   return Buffer.from(bytes.buffer);
 }
 
-interface RtcDataOptions extends DuplexOptions {
+interface PeerOptions extends DuplexOptions {
   initiator?: boolean;
   channelName?: string;
 }
 
-export default class RtcData extends Duplex {
+export default class Peer extends Duplex {
   public readonly id = randomBytes(4)
     .toString('hex')
     .slice(0, 7);
@@ -23,7 +23,7 @@ export default class RtcData extends Duplex {
   private channelName: string | null;
   private connection: RTCPeerConnection;
 
-  constructor(opts: RtcDataOptions) {
+  constructor(opts: PeerOptions) {
     super({ ...opts, allowHalfOpen: false });
 
     this.initiator = opts.initiator || false;

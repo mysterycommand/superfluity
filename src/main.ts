@@ -1,6 +1,6 @@
 import './main.css';
 
-import RtcData from './lib/rtc-data';
+import Peer from './lib/peer';
 
-const data = new RtcData();
+const data = new Peer({ initiator: true });
 console.log(data.id);
