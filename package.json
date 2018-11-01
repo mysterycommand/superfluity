@@ -8,8 +8,8 @@
   "private": true,
   "scripts": {
     "clean": "rm -rf .cache/ coverage/ dist/ node_modules/",
-    "build": "parcel build src/index.html --public-url / --experimental-scope-hoisting",
-    "start": "parcel src/index.html",
+    "build": "parcel build src/**/*.html --public-url / --experimental-scope-hoisting",
+    "start": "parcel src/**/*.html",
     "lint": "tslint 'src/**/*.ts'",
     "test": "jest",
     "coverage": "open coverage/lcov-report/index.html"
