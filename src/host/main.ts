@@ -7,43 +7,10 @@ import '../main.css';
 
 const pre = document.querySelector('pre') as HTMLPreElement;
 
-auth.signInAnonymously().then(snapshot => {
-  if (!snapshot) {
+auth.signInAnonymously().then(userCredential => {
+  if (!userCredential) {
     return;
   }
-
-  const user = snapshot.user as User;
-  const host = new Peer({ initiator: true, trickle: false });
-  Object.defineProperty(window, 'host', { value: host });
-
-  database.ref('/players').on('child_added', playerSnapshot => {
-    if (!playerSnapshot) {
-      return;
-    }
-
-    console.log(playerSnapshot.val());
-    host.signal(JSON.stringify(playerSnapshot.val()));
-  });
-
-  host.on('signal', data => {
-    pre.innerText = JSON.stringify(
-      {
-        ...data,
-        sdp: data.sdp.split('\r\n'),
-      },
-      null,
-      2,
-    );
-    database.ref(`/hosts/${user.uid}`).set(data);
-  });
-
-  host.on('connect', () => {
-    console.log('connect');
-  });
-
-  host.on('data', () => {
-    console.log('data');
-  });
 });
 
 // database.ref('/offer').on('value', snapshot => {
