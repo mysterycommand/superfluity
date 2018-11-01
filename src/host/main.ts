@@ -16,6 +16,15 @@ auth.signInAnonymously().then(snapshot => {
   const host = new Peer({ initiator: true, trickle: false });
   Object.defineProperty(window, 'host', { value: host });
 
+  database.ref('/players').on('child_added', playerSnapshot => {
+    if (!playerSnapshot) {
+      return;
+    }
+
+    console.log(playerSnapshot.val());
+    host.signal(JSON.stringify(playerSnapshot.val()));
+  });
+
   host.on('signal', data => {
     pre.innerText = JSON.stringify(
       {
@@ -26,6 +35,14 @@ auth.signInAnonymously().then(snapshot => {
       2,
     );
     database.ref(`/hosts/${user.uid}`).set(data);
+  });
+
+  host.on('connect', () => {
+    console.log('connect');
+  });
+
+  host.on('data', () => {
+    console.log('data');
   });
 });
 
