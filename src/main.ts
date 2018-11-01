@@ -1,8 +1,33 @@
 import './main.css';
 
 import Peer from 'simple-peer';
+import database from './lib/database';
 
-const peer = new Peer({ initiator: location.hash === '#1', trickle: false });
+database.ref('/offer').on('value', snapshot => {
+  if (!snapshot || !snapshot.val()) {
+    return;
+  }
+
+  console.log('offer', snapshot.val());
+
+  if (!isInitiator()) {
+    peer.signal(JSON.stringify(snapshot.val()));
+  }
+});
+
+database.ref('/answer').on('value', snapshot => {
+  if (!snapshot || !snapshot.val()) {
+    return;
+  }
+
+  if (isInitiator()) {
+    peer.signal(JSON.stringify(snapshot.val()));
+  }
+});
+
+const isInitiator = () => location.hash === '#1';
+
+const peer = new Peer({ initiator: isInitiator(), trickle: false });
 Object.defineProperty(window, 'peer', {
   value: peer,
 });
@@ -12,10 +37,16 @@ peer.on('error', (error: Error) => {
 });
 
 peer.on('signal', (data: {}) => {
-  console.log('SIGNAL', JSON.stringify(data, null, 2)); // tslint:disable-line
+  console.log('SIGNAL', JSON.stringify(data)); // tslint:disable-line
   (document.querySelector(
     '#outgoing',
   ) as HTMLPreElement).textContent = JSON.stringify(data);
+
+  if (isInitiator()) {
+    database.ref('/offer').set(data);
+  } else {
+    database.ref('/answer').set(data);
+  }
 });
 
 (document.querySelector('form') as HTMLFormElement).addEventListener(
@@ -32,9 +63,23 @@ peer.on('signal', (data: {}) => {
 
 peer.on('connect', () => {
   console.log('CONNECT'); // tslint:disable-line
-  peer.send('whatever' + Math.random());
+  peer.send(JSON.stringify({ whatever: Math.random() }));
 });
 
 peer.on('data', (data: string) => {
-  console.log('data: ' + data); // tslint:disable-line
+  console.log('data:', JSON.parse(data)); // tslint:disable-line
+});
+
+window.addEventListener('deviceorientation', event => {
+  event.preventDefault();
+  const { absolute, alpha, beta, gamma } = event;
+  peer.send(JSON.stringify({ absolute, alpha, beta, gamma }));
+});
+
+window.addEventListener('load', () => {
+  if (isInitiator()) {
+    database.ref('/offer').set(null);
+  }
+
+  database.ref('/answer').set(null);
 });
