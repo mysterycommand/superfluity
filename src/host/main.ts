@@ -31,16 +31,16 @@ auth.signInAnonymously().then(userCredential => {
         answer.set(data);
       })
       .on('connect', () => {
-        pre.textContent += `player - ${connection.key} - connected`;
+        pre.textContent += `player ${connection.key} - connected\n\n`;
 
         const time = new Date().toLocaleTimeString();
         host.send(JSON.stringify({ host: connection.key, time }));
       })
       .on('close', () => {
-        pre.textContent += `player - ${connection.key} - closed`;
+        pre.textContent += `player ${connection.key} - closed\n\n`;
       })
       .on('end', () => {
-        pre.textContent += `player - ${connection.key} - ended`;
+        pre.textContent += `player ${connection.key} - ended\n\n`;
       })
       .on('data', data => {
         const time = new Date().toLocaleTimeString();

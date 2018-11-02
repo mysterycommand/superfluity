@@ -31,21 +31,21 @@ auth.signInAnonymously().then(userCredential => {
       offer.set(data);
     })
     .on('connect', () => {
-      h1.textContent = `player - ${connection.key} - connected`;
+      h1.textContent = `player ${connection.key} - connected`;
 
       const time = new Date().toLocaleTimeString();
       player.send(JSON.stringify({ player: connection.key, time }));
     })
     .on('close', () => {
-      h1.textContent = `player - ${connection.key} - closed`;
+      h1.textContent = `player ${connection.key} - closed`;
     })
     .on('end', () => {
-      h1.textContent = `player - ${connection.key} - ended`;
+      h1.textContent = `player ${connection.key} - ended`;
     })
     .on('data', data => {
       const time = new Date().toLocaleTimeString();
       const message = JSON.stringify(JSON.parse(data), null, 2);
-      pre.textContent += `/* ${time} */\n${message}`;
+      pre.textContent += `/* ${time} */\n${message}\n\n`;
     });
 
   answer.on('value', data => {
