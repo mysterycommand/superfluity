@@ -4,22 +4,23 @@ import { auth, database } from '../lib/firebase';
 
 import '../main.css';
 
-const pre = document.querySelector('pre') as HTMLPreElement;
+// const pre = document.querySelector('pre') as HTMLPreElement;
 
 auth.signInAnonymously().then(userCredential => {
   if (!(userCredential && userCredential.user)) {
     return;
   }
 
-  const uid = userCredential.user.uid;
-
   const connections = database.ref('/connections');
   const connection = connections.push();
+
+  const offer = connection.child('offer').ref;
+  const answer = connection.child('answer').ref;
 
   connection.onDisconnect().set(null);
 
   const player = new Peer({ initiator: true, trickle: false });
-  Object.defineProperty(window, 'player', { value: player });
+  console.log(player);
 
   player
     .on('signal', data => {
@@ -27,20 +28,21 @@ auth.signInAnonymously().then(userCredential => {
         return;
       }
 
-      connection.set({ uid, offer: data });
+      offer.set(data);
     })
     .on('connect', () => {
       console.log('connect');
     })
     .on('data', data => {
-      console.log('data', data);
+      console.log('data', JSON.parse(data));
     });
 
-  connection.child('answer').on('value', answer => {
-    if (!answer) {
+  answer.on('value', data => {
+    if (!(data && data.val())) {
       return;
     }
 
-    player.signal(JSON.stringify(answer.val()));
+    console.log(data.val());
+    player.signal(data.val());
   });
 });
