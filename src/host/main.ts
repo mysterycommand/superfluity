@@ -27,8 +27,12 @@ auth.signInAnonymously().then(userCredential => {
     hosts[connection.key] = host; // TODO: @mysterycommand - clean up later
 
     host
-      .on('signal', answer => {
-        connection.ref.update({ answer });
+      .on('signal', data => {
+        if (data.type !== 'answer') {
+          return;
+        }
+
+        connection.ref.update({ answer: data });
       })
       .on('connect', () => {
         console.log('connect');
@@ -37,6 +41,7 @@ auth.signInAnonymously().then(userCredential => {
         console.log('data', data);
       });
 
+    console.log('child_added', connection);
     host.signal(JSON.stringify(connection.child('offer').val()));
   });
 });
