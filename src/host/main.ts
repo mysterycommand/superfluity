@@ -12,6 +12,8 @@ auth.signInAnonymously().then(userCredential => {
     return;
   }
 
+  const { uid } = userCredential.user;
+
   const connections = database.ref('/connections');
   connections.on('child_added', connection => {
     if (!connection) {
@@ -29,7 +31,7 @@ auth.signInAnonymously().then(userCredential => {
           return;
         }
 
-        answer.set(data);
+        answer.set({ ...data, uid });
       })
       .on('connect', () => {
         pre.textContent += `player ${connection.key} - connected\n\n`;

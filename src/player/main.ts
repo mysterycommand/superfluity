@@ -1,3 +1,6 @@
+import firebase from 'firebase/app';
+import 'firebase/database';
+
 import Peer from 'simple-peer';
 
 import { auth, database } from '../lib/firebase';
@@ -12,8 +15,12 @@ auth.signInAnonymously().then(userCredential => {
     return;
   }
 
+  const { uid } = userCredential.user;
+
   const connections = database.ref('/connections');
-  const connection = connections.push();
+  const connection = connections.push({
+    createdAt: firebase.database.ServerValue.TIMESTAMP,
+  });
 
   const offer = connection.child('offer').ref;
   const answer = connection.child('answer').ref;
@@ -33,7 +40,7 @@ auth.signInAnonymously().then(userCredential => {
         return;
       }
 
-      offer.set(data);
+      offer.set({ ...data, uid });
     })
     .on('connect', () => {
       h1.textContent = `player ${connection.key} - connected`;
