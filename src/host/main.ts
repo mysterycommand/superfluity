@@ -5,6 +5,7 @@ import { auth, database } from '../lib/firebase';
 import '../main.css';
 
 const pre = document.querySelector('pre') as HTMLPreElement;
+const div = document.querySelector('div') as HTMLDivElement;
 
 auth.signInAnonymously().then(userCredential => {
   if (!(userCredential && userCredential.user)) {
@@ -43,9 +44,19 @@ auth.signInAnonymously().then(userCredential => {
         pre.textContent += `player ${connection.key} - ended\n\n`;
       })
       .on('data', data => {
-        const time = new Date().toLocaleTimeString();
-        const message = JSON.stringify(JSON.parse(data), null, 2);
-        pre.textContent += `/* ${time} */\n${message}\n\n`;
+        const parsed = JSON.parse(data);
+
+        if (parsed.time) {
+          const message = JSON.stringify(parsed, null, 2);
+          const time = new Date().toLocaleTimeString();
+          pre.textContent += `/* ${time} */\n${message}\n\n`;
+        } else {
+          div.style.transform = [
+            `rotateZ(${parsed.alpha}deg)`,
+            `rotateX(${parsed.beta - 90}deg)`,
+            `rotateY(${parsed.gamma}deg)`,
+          ].join(' ');
+        }
       });
 
     offer.once('value', data => {

@@ -22,6 +22,11 @@ auth.signInAnonymously().then(userCredential => {
 
   const player = new Peer({ initiator: true, trickle: false });
 
+  const onDeviceOrientation = (event: DeviceOrientationEvent) => {
+    const { absolute, alpha, beta, gamma } = event;
+    player.send(JSON.stringify({ absolute, alpha, beta, gamma }));
+  };
+
   player
     .on('signal', data => {
       if (data.type !== 'offer') {
@@ -35,17 +40,25 @@ auth.signInAnonymously().then(userCredential => {
 
       const time = new Date().toLocaleTimeString();
       player.send(JSON.stringify({ player: connection.key, time }));
+
+      window.addEventListener('deviceorientation', onDeviceOrientation);
     })
     .on('close', () => {
       h1.textContent = `player ${connection.key} - closed`;
+      window.removeEventListener('deviceorientation', onDeviceOrientation);
     })
     .on('end', () => {
       h1.textContent = `player ${connection.key} - ended`;
+      window.removeEventListener('deviceorientation', onDeviceOrientation);
     })
     .on('data', data => {
-      const time = new Date().toLocaleTimeString();
-      const message = JSON.stringify(JSON.parse(data), null, 2);
-      pre.textContent += `/* ${time} */\n${message}\n\n`;
+      const parsed = JSON.parse(data);
+
+      if (parsed.time) {
+        const message = JSON.stringify(parsed, null, 2);
+        const time = new Date().toLocaleTimeString();
+        pre.textContent += `/* ${time} */\n${message}\n\n`;
+      }
     });
 
   answer.on('value', data => {
