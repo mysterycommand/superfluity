@@ -1,16 +1,44 @@
 import { User } from 'firebase';
-import Peer from 'simple-peer';
+import Peer, { Instance } from 'simple-peer';
 
 import { auth, database } from '../lib/firebase';
 
 import '../main.css';
 
 const pre = document.querySelector('pre') as HTMLPreElement;
+const hosts: Record<string, Instance> = {};
 
 auth.signInAnonymously().then(userCredential => {
-  if (!userCredential) {
+  if (!(userCredential && userCredential.user)) {
     return;
   }
+
+  const uid = userCredential.user.uid;
+
+  const connections = database.ref('/connections');
+  connections.on('child_added', connection => {
+    if (!(connection && connection.key && connection.child('offer').exists())) {
+      return;
+    }
+
+    const host = new Peer({ trickle: false });
+    Object.defineProperty(window, 'host', { value: host });
+
+    hosts[connection.key] = host; // TODO: @mysterycommand - clean up later
+
+    host
+      .on('signal', answer => {
+        connection.ref.update({ answer });
+      })
+      .on('connect', () => {
+        console.log('connect');
+      })
+      .on('data', data => {
+        console.log('data', data);
+      });
+
+    host.signal(JSON.stringify(connection.child('offer').val()));
+  });
 });
 
 // database.ref('/offer').on('value', snapshot => {
