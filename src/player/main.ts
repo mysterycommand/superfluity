@@ -4,7 +4,8 @@ import { auth, database } from '../lib/firebase';
 
 import '../main.css';
 
-// const pre = document.querySelector('pre') as HTMLPreElement;
+const h1 = document.querySelector('h1') as HTMLHeadingElement;
+const pre = document.querySelector('pre') as HTMLPreElement;
 
 auth.signInAnonymously().then(userCredential => {
   if (!(userCredential && userCredential.user)) {
@@ -20,7 +21,6 @@ auth.signInAnonymously().then(userCredential => {
   connection.onDisconnect().set(null);
 
   const player = new Peer({ initiator: true, trickle: false });
-  console.log(player);
 
   player
     .on('signal', data => {
@@ -31,10 +31,21 @@ auth.signInAnonymously().then(userCredential => {
       offer.set(data);
     })
     .on('connect', () => {
-      console.log('connect');
+      h1.textContent = `player - ${connection.key} - connected`;
+
+      const time = new Date().toLocaleTimeString();
+      player.send(JSON.stringify({ player: connection.key, time }));
+    })
+    .on('close', () => {
+      h1.textContent = `player - ${connection.key} - closed`;
+    })
+    .on('end', () => {
+      h1.textContent = `player - ${connection.key} - ended`;
     })
     .on('data', data => {
-      console.log('data', JSON.parse(data));
+      const time = new Date().toLocaleTimeString();
+      const message = JSON.stringify(JSON.parse(data), null, 2);
+      pre.textContent += `/* ${time} */\n${message}`;
     });
 
   answer.on('value', data => {
@@ -42,7 +53,6 @@ auth.signInAnonymously().then(userCredential => {
       return;
     }
 
-    console.log(data.val());
     player.signal(data.val());
   });
 });
