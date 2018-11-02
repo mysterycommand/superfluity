@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/fartts/superfluity/compare/v1.1.0...v1.1.1) (2018-11-02)
+
+
+### Bug Fixes
+
+* **package.json:** updates public url because this is a project page ([7f745a7](https://github.com/fartts/superfluity/commit/7f745a7))
+
 # [1.1.0](https://github.com/fartts/superfluity/compare/v1.0.0...v1.1.0) (2018-11-02)
 
 
