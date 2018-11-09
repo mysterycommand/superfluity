@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/fartts/superfluity/compare/v1.3.0...v1.3.1) (2018-11-09)
+
+
+### Bug Fixes
+
+* **host:** generate the right player url ([c8e2f02](https://github.com/fartts/superfluity/commit/c8e2f02))
+
 # [1.3.0](https://github.com/fartts/superfluity/compare/v1.2.0...v1.3.0) (2018-11-09)
 
 
