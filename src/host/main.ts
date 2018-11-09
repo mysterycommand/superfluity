@@ -54,9 +54,9 @@ auth.signInAnonymously().then(userCredential => {
           pre.textContent += `/* ${time} */\n${message}\n\n`;
         } else {
           div.style.transform = [
-            `rotateZ(${parsed.alpha - 180}deg)`,
+            `rotateY(${parsed.alpha - 180}deg)`,
             `rotateX(${parsed.beta - 90}deg)`,
-            `rotateY(${-parsed.gamma}deg)`,
+            `rotateZ(${-parsed.gamma}deg)`,
           ].join(' ');
         }
       });
