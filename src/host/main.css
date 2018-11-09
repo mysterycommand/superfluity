@@ -1,5 +1,9 @@
 @import '../main.css';
 
+body {
+  cursor: none;
+}
+
 pre {
   pointer-events: none;
   margin: 0;
@@ -27,12 +31,16 @@ aside {
 
 ul {
   display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+
   margin: 0;
   padding: 0;
-  max-width: 80%;
+  max-width: 90%;
 }
 
 li {
   list-style-type: none;
-  display: inline-block;
+  margin: 4px;
 }
