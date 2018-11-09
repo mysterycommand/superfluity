@@ -5,10 +5,10 @@ import Peer from 'simple-peer';
 
 import { auth, database } from '../lib/firebase';
 
-import '../main.css';
+import './main.css';
 
+const main = document.querySelector('main') as HTMLMainElement;
 const h1 = document.querySelector('h1') as HTMLHeadingElement;
-const pre = document.querySelector('pre') as HTMLPreElement;
 
 auth.signInAnonymously().then(userCredential => {
   if (!(userCredential && userCredential.user)) {
@@ -34,6 +34,11 @@ auth.signInAnonymously().then(userCredential => {
     player.send(JSON.stringify({ absolute, alpha, beta, gamma }));
   };
 
+  const onErrorCloseOrEnd = () => {
+    h1.textContent = 'player';
+    window.removeEventListener('deviceorientation', onDeviceOrientation);
+  };
+
   player
     .on('signal', data => {
       if (data.type !== 'offer') {
@@ -50,21 +55,18 @@ auth.signInAnonymously().then(userCredential => {
 
       window.addEventListener('deviceorientation', onDeviceOrientation);
     })
-    .on('close', () => {
-      h1.textContent = `player ${connection.key} - closed`;
-      window.removeEventListener('deviceorientation', onDeviceOrientation);
-    })
-    .on('end', () => {
-      h1.textContent = `player ${connection.key} - ended`;
-      window.removeEventListener('deviceorientation', onDeviceOrientation);
-    })
+    .on('error', onErrorCloseOrEnd)
+    .on('close', onErrorCloseOrEnd)
+    .on('end', onErrorCloseOrEnd)
     .on('data', data => {
       const parsed = JSON.parse(data);
 
       if (parsed.time) {
         const message = JSON.stringify(parsed, null, 2);
         const time = new Date().toLocaleTimeString();
-        pre.textContent += `/* ${time} */\n${message}\n\n`;
+
+        // tslint:disable-next-line no-console
+        console.log(`player.on 'data':\n/* ${time} */\n${message}\n\n`);
       }
     });
 
@@ -73,6 +75,10 @@ auth.signInAnonymously().then(userCredential => {
       return;
     }
 
+    // tslint:disable-next-line no-console
+    console.log(
+      `answer.on 'value':\n${JSON.stringify(data.val(), null, 2)}\n\n`,
+    );
     player.signal(data.val());
   });
 });
