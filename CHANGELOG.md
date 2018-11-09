@@ -1,3 +1,14 @@
+# [1.2.0](https://github.com/fartts/superfluity/compare/v1.1.1...v1.2.0) (2018-11-09)
+
+
+### Features
+
+* **host:** make the pre element not interfere with the main/div setup ([c4b1010](https://github.com/fartts/superfluity/commit/c4b1010))
+* **host/player:** add custome stylesheets for each endpoint, start tweaking styles ([9ca89d6](https://github.com/fartts/superfluity/commit/9ca89d6))
+* **player state:** break connecting into calling (offer) and receiving (answer) before going to con ([61314ca](https://github.com/fartts/superfluity/commit/61314ca))
+* **player styles:** add styling for loading, signed-in, connecting, connected, signed-out, and erro ([516fd20](https://github.com/fartts/superfluity/commit/516fd20))
+* **player: try again:** add transition for button visibility/styling ([1f8e157](https://github.com/fartts/superfluity/commit/1f8e157))
+
 ## [1.1.1](https://github.com/fartts/superfluity/compare/v1.1.0...v1.1.1) (2018-11-02)
 
 
