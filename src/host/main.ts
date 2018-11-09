@@ -1,5 +1,5 @@
 import Peer, { Instance } from 'simple-peer';
-import { toCanvas } from 'qrcode';
+import { toCanvas, QRCodeRenderersOptions } from 'qrcode';
 
 import { auth, database } from '../lib/firebase';
 
@@ -8,14 +8,11 @@ import './main.css';
 const main = document.querySelector('main') as HTMLMainElement;
 const pre = document.querySelector('pre') as HTMLPreElement;
 const div = document.querySelector('div') as HTMLDivElement;
+const canvas = document.querySelector('canvas') as HTMLCanvasElement;
 
 const { protocol, hostname, port } = location;
-toCanvas(
-  `${protocol}//${hostname}:${port}/player/index.html`,
-  (error, canvas) => {
-    main.appendChild(canvas);
-  },
-);
+const playerUrl = `${protocol}//${hostname}:${port}/player/index.html`;
+const qrcodeOpts: QRCodeRenderersOptions = { scale: 3 };
 
 const log = (str: string) => {
   pre.textContent += str;
@@ -24,6 +21,9 @@ const log = (str: string) => {
     behavior: 'smooth',
   });
 };
+toCanvas(canvas, playerUrl, qrcodeOpts, error => {
+  log(`qrcode error:\n${error.message}`);
+});
 
 auth.signInAnonymously().then(userCredential => {
   if (!(userCredential && userCredential.user)) {
