@@ -11,6 +11,8 @@ const main = document.querySelector('main') as HTMLMainElement;
 const h1 = document.querySelector('h1') as HTMLHeadingElement;
 const button = document.querySelector('button') as HTMLButtonElement;
 
+const { innerWidth: width, innerHeight: height } = window;
+
 main.className = 'loading';
 button.addEventListener('click', event => {
   event.preventDefault();
@@ -39,7 +41,9 @@ auth.signInAnonymously().then(userCredential => {
 
   const onDeviceOrientation = (event: DeviceOrientationEvent) => {
     const { absolute, alpha, beta, gamma } = event;
-    player.send(JSON.stringify({ absolute, alpha, beta, gamma }));
+    player.send(
+      JSON.stringify({ width, height, absolute, alpha, beta, gamma }),
+    );
   };
 
   const onErrorCloseOrEnd = () => {
@@ -91,6 +95,8 @@ auth.signInAnonymously().then(userCredential => {
       const time = new Date().toLocaleTimeString();
       player.send(
         JSON.stringify({
+          width,
+          height,
           connection: connection.key,
           player: playerUuid,
           time,

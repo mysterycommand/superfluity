@@ -25,8 +25,16 @@ aside {
   left: 0;
 }
 
-div {
+ul {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  max-width: 80%;
+  vertical-align: center;
+}
+
+li {
   background: linear-gradient(magenta, blue);
-  width: 240px;
-  height: 320px;
+  list-style-type: none;
+  display: inline-block;
 }

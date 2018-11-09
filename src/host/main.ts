@@ -5,9 +5,8 @@ import { auth, database } from '../lib/firebase';
 
 import './main.css';
 
-const main = document.querySelector('main') as HTMLMainElement;
+const ul = document.querySelector('ul') as HTMLUListElement;
 const pre = document.querySelector('pre') as HTMLPreElement;
-const div = document.querySelector('div') as HTMLDivElement;
 const canvas = document.querySelector('canvas') as HTMLCanvasElement;
 
 const log = (str: string) => {
@@ -38,6 +37,20 @@ auth.signInAnonymously().then(userCredential => {
   const guests: Record<string, Instance> = {};
   Object.defineProperty(window, 'guests', { value: guests });
 
+  const removeGuest = (key: string) => {
+    if (guests[key]) {
+      const host = guests[key];
+      host.destroy();
+
+      delete guests[key];
+    }
+
+    const li = document.getElementById(`connection-${key}`);
+    if (li) {
+      li.remove();
+    }
+  };
+
   const connections = database.ref('/connections');
   connections.on('child_added', connection => {
     if (!(connection && connection.key)) {
@@ -50,6 +63,9 @@ auth.signInAnonymously().then(userCredential => {
     const host = new Peer({ initiator: false, trickle: false });
     guests[connection.key] = host;
 
+    const li = document.createElement('li');
+    li.id = `connection-${connection.key}`;
+
     const onErrorCloseOrEnd = (error?: Error) => {
       if (!(connection && connection.key)) {
         return;
@@ -61,10 +77,7 @@ auth.signInAnonymously().then(userCredential => {
         log(`connection: ${connection.key} - disconnected\n`);
       }
 
-      if (guests[connection.key]) {
-        host.destroy();
-        delete guests[connection.key];
-      }
+      removeGuest(connection.key);
     };
 
     host
@@ -78,6 +91,8 @@ auth.signInAnonymously().then(userCredential => {
       .on('connect', () => {
         log(`connection: ${connection.key} - connected\n`);
 
+        ul.appendChild(li);
+
         const time = new Date().toLocaleTimeString();
         host.send(JSON.stringify({ host: connection.key, time }));
       })
@@ -85,15 +100,25 @@ auth.signInAnonymously().then(userCredential => {
       .on('close', onErrorCloseOrEnd)
       .on('end', onErrorCloseOrEnd)
       .on('data', data => {
-        const { time, player, alpha, beta, gamma } = JSON.parse(data);
+        const { time, player, width, height, alpha, beta, gamma } = JSON.parse(
+          data,
+        );
 
         if (time) {
           const localTime = new Date().toLocaleTimeString();
+
           log(
             `\nplayer: ${player} - added\nplayer time: ${time}\nhost time: ${localTime}\n\n`,
           );
+
+          li.style.width = `${width / 4}px`;
+          li.style.height = `${height / 4}px`;
+
+          const h1 = Math.random() * 360;
+          const h2 = (h1 + 180) % 360;
+          li.style.background = `linear-gradient(hsl(${h1}, 50%, 50%), hsl(${h2}, 50%, 50%))`;
         } else {
-          div.style.transform = [
+          li.style.transform = [
             `rotateY(${alpha - 180}deg)`,
             `rotateX(${beta - 90}deg)`,
             `rotateZ(${-gamma}deg)`,
@@ -116,14 +141,6 @@ auth.signInAnonymously().then(userCredential => {
     }
 
     log(`connection: ${connection.key} - removed\n`);
-
-    if (guests[connection.key]) {
-      if (guests[connection.key] instanceof Peer) {
-        const host = guests[connection.key];
-        host.destroy();
-      }
-
-      delete guests[connection.key];
-    }
+    removeGuest(connection.key);
   });
 });
