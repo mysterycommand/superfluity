@@ -10,11 +10,14 @@ import './main.css';
 const main = document.querySelector('main') as HTMLMainElement;
 const h1 = document.querySelector('h1') as HTMLHeadingElement;
 
+main.className = 'loading';
+
 auth.signInAnonymously().then(userCredential => {
   if (!(userCredential && userCredential.user)) {
     return;
   }
 
+  main.className = 'signed-in';
   const { uid } = userCredential.user;
 
   const connections = database.ref('/connections');
@@ -35,9 +38,25 @@ auth.signInAnonymously().then(userCredential => {
   };
 
   const onErrorCloseOrEnd = () => {
-    h1.textContent = 'player';
+    main.className = 'error';
+    h1.textContent = 'sorry player';
     window.removeEventListener('deviceorientation', onDeviceOrientation);
   };
+
+  const randomBytes = (size = 2) => {
+    const raw = new Uint8Array(size);
+
+    if (size > 0) {
+      crypto.getRandomValues(raw);
+    }
+
+    const bytes = Buffer.from(raw.buffer);
+    return bytes;
+  };
+
+  const playerUuid = randomBytes()
+    .toString('hex')
+    .slice(0, 7);
 
   player
     .on('signal', data => {
@@ -45,13 +64,21 @@ auth.signInAnonymously().then(userCredential => {
         return;
       }
 
+      main.className = 'connecting';
       offer.set({ ...data, uid });
     })
     .on('connect', () => {
-      h1.textContent = `player ${connection.key} - connected`;
+      main.className = 'connected';
+      h1.textContent = `player: ${playerUuid}`;
 
       const time = new Date().toLocaleTimeString();
-      player.send(JSON.stringify({ player: connection.key, time }));
+      player.send(
+        JSON.stringify({
+          connection: connection.key,
+          player: playerUuid,
+          time,
+        }),
+      );
 
       window.addEventListener('deviceorientation', onDeviceOrientation);
     })
