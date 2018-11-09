@@ -10,10 +10,6 @@ const pre = document.querySelector('pre') as HTMLPreElement;
 const div = document.querySelector('div') as HTMLDivElement;
 const canvas = document.querySelector('canvas') as HTMLCanvasElement;
 
-const { protocol, hostname, port } = location;
-const playerUrl = `${protocol}//${hostname}:${port}/player/index.html`;
-const qrcodeOpts: QRCodeRenderersOptions = { scale: 3 };
-
 const log = (str: string) => {
   pre.textContent += str;
   pre.scrollTo({
@@ -21,6 +17,14 @@ const log = (str: string) => {
     behavior: 'smooth',
   });
 };
+
+const { protocol, hostname, port } = location;
+const playerUrl = `${protocol}//${hostname}:${port}/player/index.html`;
+const qrcodeOpts: QRCodeRenderersOptions = {
+  color: { light: '#ffffff66' },
+  scale: 3,
+};
+
 toCanvas(canvas, playerUrl, qrcodeOpts, error => {
   log(`qrcode error:\n${error.message}`);
 });
