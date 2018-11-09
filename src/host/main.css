@@ -34,7 +34,6 @@ ul {
 }
 
 li {
-  background: linear-gradient(magenta, blue);
   list-style-type: none;
   display: inline-block;
 }
