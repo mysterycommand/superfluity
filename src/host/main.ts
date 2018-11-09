@@ -119,8 +119,11 @@ auth.signInAnonymously().then(userCredential => {
 
           const h1 = Math.random() * 360;
           const h2 = (h1 + 180) % 360;
-          li.style.background = `linear-gradient(hsl(${h1}, 50%, 50%), hsl(${h2}, 50%, 50%))`;
+
+          // TODO: @mysterycommand - more here, radial-gradients?
+          li.style.background = `linear-gradient(hsl(${h1}, 80%, 50%), hsl(${h2}, 80%, 50%))`;
         } else {
+          // TODO: @mysterycommand - more here, lerp toward these values for smoother look
           li.style.transform = [
             `rotateY(${alpha - 180}deg)`,
             `rotateX(${beta - 90}deg)`,
