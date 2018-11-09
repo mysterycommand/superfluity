@@ -1,11 +1,21 @@
 import Peer, { Instance } from 'simple-peer';
+import { toCanvas } from 'qrcode';
 
 import { auth, database } from '../lib/firebase';
 
 import './main.css';
 
+const main = document.querySelector('main') as HTMLMainElement;
 const pre = document.querySelector('pre') as HTMLPreElement;
 const div = document.querySelector('div') as HTMLDivElement;
+
+const { protocol, hostname, port } = location;
+toCanvas(
+  `${protocol}//${hostname}:${port}/player/index.html`,
+  (error, canvas) => {
+    main.appendChild(canvas);
+  },
+);
 
 const log = (str: string) => {
   pre.textContent += str;
