@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/fartts/superfluity/compare/v1.3.1...v1.4.0) (2018-11-09)
+
+
+### Features
+
+* **host:** better styling for multiple players, some notes, hide cursor on host ([9f01e6e](https://github.com/fartts/superfluity/commit/9f01e6e))
+
 ## [1.3.1](https://github.com/fartts/superfluity/compare/v1.3.0...v1.3.1) (2018-11-09)
 
 
