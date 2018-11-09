@@ -1,3 +1,14 @@
+# [1.3.0](https://github.com/fartts/superfluity/compare/v1.2.0...v1.3.0) (2018-11-09)
+
+
+### Features
+
+* **host:** add a nicer looking auto updating logger to the works ([9661152](https://github.com/fartts/superfluity/commit/9661152))
+* **host:** generate a qr code for the player URL ([f409b82](https://github.com/fartts/superfluity/commit/f409b82))
+* **host:** generates a qrcode and shows it on the screen ([9c7d0ca](https://github.com/fartts/superfluity/commit/9c7d0ca))
+* **host:** some more tweaking the logger output and styles ([c5645d4](https://github.com/fartts/superfluity/commit/c5645d4))
+* **host [mostly]:** host now keeps a record of connections and cleans them up if/when they die, doe ([2a6d092](https://github.com/fartts/superfluity/commit/2a6d092))
+
 # [1.2.0](https://github.com/fartts/superfluity/compare/v1.1.1...v1.2.0) (2018-11-09)
 
 
