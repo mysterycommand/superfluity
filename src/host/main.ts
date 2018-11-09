@@ -1,4 +1,4 @@
-import Peer from 'simple-peer';
+import Peer, { Instance } from 'simple-peer';
 
 import { auth, database } from '../lib/firebase';
 
@@ -13,10 +13,12 @@ auth.signInAnonymously().then(userCredential => {
   }
 
   const { uid } = userCredential.user;
+  const guests: Record<string, Instance> = {};
+  Object.defineProperty(window, 'guests', { value: guests });
 
   const connections = database.ref('/connections');
   connections.on('child_added', connection => {
-    if (!connection) {
+    if (!(connection && connection.key)) {
       return;
     }
 
@@ -24,6 +26,24 @@ auth.signInAnonymously().then(userCredential => {
     const answer = connection.child('answer').ref;
 
     const host = new Peer({ initiator: false, trickle: false });
+    guests[connection.key] = host;
+
+    const onErrorCloseOrEnd = (error?: Error) => {
+      if (!(connection && connection.key)) {
+        return;
+      }
+
+      if (error) {
+        pre.textContent += `error: ${error.message}\n\n`;
+      } else if (guests[connection.key]) {
+        pre.textContent += `player ${connection.key} - disconnected\n\n`;
+      }
+
+      if (guests[connection.key]) {
+        host.destroy();
+        delete guests[connection.key];
+      }
+    };
 
     host
       .on('signal', data => {
@@ -39,12 +59,9 @@ auth.signInAnonymously().then(userCredential => {
         const time = new Date().toLocaleTimeString();
         host.send(JSON.stringify({ host: connection.key, time }));
       })
-      .on('close', () => {
-        pre.textContent += `player ${connection.key} - closed\n\n`;
-      })
-      .on('end', () => {
-        pre.textContent += `player ${connection.key} - ended\n\n`;
-      })
+      .on('error', onErrorCloseOrEnd)
+      .on('close', onErrorCloseOrEnd)
+      .on('end', onErrorCloseOrEnd)
       .on('data', data => {
         const parsed = JSON.parse(data);
 
@@ -61,12 +78,29 @@ auth.signInAnonymously().then(userCredential => {
         }
       });
 
-    offer.once('value', data => {
+    offer.on('value', data => {
       if (!(data && data.val())) {
         return;
       }
 
       host.signal(data.val());
     });
+  });
+
+  connections.on('child_removed', connection => {
+    if (!(connection && connection.key)) {
+      return;
+    }
+
+    pre.textContent += `player ${connection.key} - removed\n\n`;
+
+    if (guests[connection.key]) {
+      if (guests[connection.key] instanceof Peer) {
+        const host = guests[connection.key];
+        host.destroy();
+      }
+
+      delete guests[connection.key];
+    }
   });
 });

@@ -63,6 +63,18 @@ auth.signInAnonymously().then(userCredential => {
     .toString('hex')
     .slice(0, 7);
 
+  // tslint:disable-next-line no-console
+  console.log(
+    `connection:\n${JSON.stringify(
+      {
+        connection: connection.key,
+        player: playerUuid,
+      },
+      null,
+      2,
+    )}\n\n`,
+  );
+
   player
     .on('signal', data => {
       if (data.type !== 'offer') {
