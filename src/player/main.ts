@@ -5,16 +5,24 @@ import Peer from 'simple-peer';
 
 import { auth, database } from '../lib/firebase';
 
-import '../main.css';
+import './main.css';
 
+const main = document.querySelector('main') as HTMLMainElement;
 const h1 = document.querySelector('h1') as HTMLHeadingElement;
-const pre = document.querySelector('pre') as HTMLPreElement;
+const button = document.querySelector('button') as HTMLButtonElement;
+
+main.className = 'loading';
+button.addEventListener('click', event => {
+  event.preventDefault();
+  location.reload(true);
+});
 
 auth.signInAnonymously().then(userCredential => {
   if (!(userCredential && userCredential.user)) {
     return;
   }
 
+  main.className = 'signed-in';
   const { uid } = userCredential.user;
 
   const connections = database.ref('/connections');
@@ -34,37 +42,63 @@ auth.signInAnonymously().then(userCredential => {
     player.send(JSON.stringify({ absolute, alpha, beta, gamma }));
   };
 
+  const onErrorCloseOrEnd = () => {
+    main.className = 'error';
+    h1.textContent = 'sorry player';
+    window.removeEventListener('deviceorientation', onDeviceOrientation);
+  };
+
+  const randomBytes = (size = 2) => {
+    const raw = new Uint8Array(size);
+
+    if (size > 0) {
+      crypto.getRandomValues(raw);
+    }
+
+    const bytes = Buffer.from(raw.buffer);
+    return bytes;
+  };
+
+  const playerUuid = randomBytes()
+    .toString('hex')
+    .slice(0, 7);
+
   player
     .on('signal', data => {
       if (data.type !== 'offer') {
         return;
       }
 
+      main.className = 'calling';
       offer.set({ ...data, uid });
     })
     .on('connect', () => {
-      h1.textContent = `player ${connection.key} - connected`;
+      main.className = 'connected';
+      h1.textContent = `player: ${playerUuid}`;
 
       const time = new Date().toLocaleTimeString();
-      player.send(JSON.stringify({ player: connection.key, time }));
+      player.send(
+        JSON.stringify({
+          connection: connection.key,
+          player: playerUuid,
+          time,
+        }),
+      );
 
       window.addEventListener('deviceorientation', onDeviceOrientation);
     })
-    .on('close', () => {
-      h1.textContent = `player ${connection.key} - closed`;
-      window.removeEventListener('deviceorientation', onDeviceOrientation);
-    })
-    .on('end', () => {
-      h1.textContent = `player ${connection.key} - ended`;
-      window.removeEventListener('deviceorientation', onDeviceOrientation);
-    })
+    .on('error', onErrorCloseOrEnd)
+    .on('close', onErrorCloseOrEnd)
+    .on('end', onErrorCloseOrEnd)
     .on('data', data => {
       const parsed = JSON.parse(data);
 
       if (parsed.time) {
         const message = JSON.stringify(parsed, null, 2);
         const time = new Date().toLocaleTimeString();
-        pre.textContent += `/* ${time} */\n${message}\n\n`;
+
+        // tslint:disable-next-line no-console
+        console.log(`player.on 'data':\n/* ${time} */\n${message}\n\n`);
       }
     });
 
@@ -73,6 +107,12 @@ auth.signInAnonymously().then(userCredential => {
       return;
     }
 
+    // tslint:disable-next-line no-console
+    console.log(
+      `answer.on 'value':\n${JSON.stringify(data.val(), null, 2)}\n\n`,
+    );
+
+    main.className = 'receiving';
     player.signal(data.val());
   });
 });
