@@ -42,9 +42,9 @@ auth.signInAnonymously().then(userCredential => {
       }
 
       if (error) {
-        log(`error: ${error.message}\n\n`);
+        log(`error:\n${error.message}\n\n`);
       } else if (guests[connection.key]) {
-        log(`player ${connection.key} - disconnected\n\n`);
+        log(`connection: ${connection.key} - disconnected\n`);
       }
 
       if (guests[connection.key]) {
@@ -62,7 +62,7 @@ auth.signInAnonymously().then(userCredential => {
         answer.set({ ...data, uid });
       })
       .on('connect', () => {
-        log(`player ${connection.key} - connected\n\n`);
+        log(`connection: ${connection.key} - connected\n`);
 
         const time = new Date().toLocaleTimeString();
         host.send(JSON.stringify({ host: connection.key, time }));
@@ -71,17 +71,18 @@ auth.signInAnonymously().then(userCredential => {
       .on('close', onErrorCloseOrEnd)
       .on('end', onErrorCloseOrEnd)
       .on('data', data => {
-        const parsed = JSON.parse(data);
+        const { time, player, alpha, beta, gamma } = JSON.parse(data);
 
-        if (parsed.time) {
-          const message = JSON.stringify(parsed, null, 2);
-          const time = new Date().toLocaleTimeString();
-          log(`/* ${time} */\n${message}\n\n`);
+        if (time) {
+          const localTime = new Date().toLocaleTimeString();
+          log(
+            `\nplayer: ${player} - added\nplayer time: ${time}\nhost time: ${localTime}\n\n`,
+          );
         } else {
           div.style.transform = [
-            `rotateY(${parsed.alpha - 180}deg)`,
-            `rotateX(${parsed.beta - 90}deg)`,
-            `rotateZ(${-parsed.gamma}deg)`,
+            `rotateY(${alpha - 180}deg)`,
+            `rotateX(${beta - 90}deg)`,
+            `rotateZ(${-gamma}deg)`,
           ].join(' ');
         }
       });
@@ -100,7 +101,7 @@ auth.signInAnonymously().then(userCredential => {
       return;
     }
 
-    log(`player ${connection.key} - removed\n\n`);
+    log(`connection: ${connection.key} - removed\n`);
 
     if (guests[connection.key]) {
       if (guests[connection.key] instanceof Peer) {
