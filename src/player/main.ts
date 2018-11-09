@@ -49,6 +49,7 @@ auth.signInAnonymously().then(userCredential => {
   const onErrorCloseOrEnd = () => {
     main.className = 'error';
     h1.textContent = 'sorry player';
+
     window.removeEventListener('deviceorientation', onDeviceOrientation);
   };
 

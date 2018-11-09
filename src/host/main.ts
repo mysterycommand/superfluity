@@ -17,15 +17,18 @@ const log = (str: string) => {
   });
 };
 
-const { protocol, hostname, port } = location;
-const playerUrl = `${protocol}//${hostname}:${port}/player/index.html`;
+const { href } = location;
+const playerUrl = href.replace('host', 'player');
 const qrcodeOpts: QRCodeRenderersOptions = {
   color: { light: '#ffffff66' },
   scale: 3,
 };
 
 toCanvas(canvas, playerUrl, qrcodeOpts, error => {
-  log(`qrcode error:\n${error.message}`);
+  if (error) {
+    log(`qrcode error:\n${error.message}`);
+    return;
+  }
 });
 
 auth.signInAnonymously().then(userCredential => {
@@ -140,7 +143,7 @@ auth.signInAnonymously().then(userCredential => {
       return;
     }
 
-    log(`connection: ${connection.key} - removed\n`);
     removeGuest(connection.key);
+    log(`connection: ${connection.key} - removed\n`);
   });
 });
