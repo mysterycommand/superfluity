@@ -9,8 +9,13 @@ import './main.css';
 
 const main = document.querySelector('main') as HTMLMainElement;
 const h1 = document.querySelector('h1') as HTMLHeadingElement;
+const button = document.querySelector('button') as HTMLButtonElement;
 
 main.className = 'loading';
+button.addEventListener('click', event => {
+  event.preventDefault();
+  location.reload(true);
+});
 
 auth.signInAnonymously().then(userCredential => {
   if (!(userCredential && userCredential.user)) {
@@ -64,7 +69,7 @@ auth.signInAnonymously().then(userCredential => {
         return;
       }
 
-      main.className = 'connecting';
+      main.className = 'calling';
       offer.set({ ...data, uid });
     })
     .on('connect', () => {
@@ -106,6 +111,8 @@ auth.signInAnonymously().then(userCredential => {
     console.log(
       `answer.on 'value':\n${JSON.stringify(data.val(), null, 2)}\n\n`,
     );
+
+    main.className = 'receiving';
     player.signal(data.val());
   });
 });

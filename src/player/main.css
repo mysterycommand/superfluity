@@ -17,11 +17,14 @@ button {
 .signed-in {
   background: #ddd;
 }
-.connecting {
+.calling {
   background: #bbb;
 }
-.connected {
+.receiving {
   background: #999;
+}
+.connected {
+  background: #777;
 }
 .error {
   background: #f00;
