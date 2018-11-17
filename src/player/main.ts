@@ -2,7 +2,6 @@ import firebase from 'firebase/app';
 import 'firebase/database';
 
 import Peer from 'simple-peer';
-import GyroNorm from 'gyronorm';
 
 import { auth, database } from '../lib/firebase';
 
@@ -40,15 +39,12 @@ auth.signInAnonymously().then(userCredential => {
 
   const player = new Peer({ initiator: true, trickle: false });
 
-  const gyro = new GyroNorm();
-  const init = gyro.init();
-
-  // const onDeviceOrientation = (event: DeviceOrientationEvent) => {
-  //   const { absolute, alpha, beta, gamma } = event;
-  //   player.send(
-  //     JSON.stringify({ width, height, absolute, alpha, beta, gamma }),
-  //   );
-  // };
+  const onDeviceOrientation = (event: DeviceOrientationEvent) => {
+    const { absolute, alpha, beta, gamma } = event;
+    player.send(
+      JSON.stringify({ width, height, absolute, alpha, beta, gamma }),
+    );
+  };
 
   /**
    * TODO: @mysterycommand - maybe type this? I'm not crazy about the API though
@@ -85,10 +81,7 @@ auth.signInAnonymously().then(userCredential => {
     main.className = 'error';
     h1.textContent = 'sorry player';
 
-    // window.removeEventListener('deviceorientation', onDeviceOrientation);
-    init.then(() => {
-      gyro.stop();
-    });
+    window.removeEventListener('deviceorientation', onDeviceOrientation);
   };
 
   const randomBytes = (size = 2) => {
@@ -141,10 +134,7 @@ auth.signInAnonymously().then(userCredential => {
         }),
       );
 
-      // window.addEventListener('deviceorientation', onDeviceOrientation);
-      init.then(() => {
-        gyro.start();
-      });
+      window.addEventListener('deviceorientation', onDeviceOrientation);
     })
     .on('error', onErrorCloseOrEnd)
     .on('close', onErrorCloseOrEnd)
