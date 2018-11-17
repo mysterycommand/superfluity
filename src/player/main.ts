@@ -2,6 +2,7 @@ import firebase from 'firebase/app';
 import 'firebase/database';
 
 import Peer from 'simple-peer';
+import GyroNorm from 'gyronorm';
 
 import { auth, database } from '../lib/firebase';
 
@@ -39,8 +40,42 @@ auth.signInAnonymously().then(userCredential => {
 
   const player = new Peer({ initiator: true, trickle: false });
 
-  const onDeviceOrientation = (event: DeviceOrientationEvent) => {
-    const { absolute, alpha, beta, gamma } = event;
+  const gyro = new GyroNorm();
+  const init = gyro.init();
+
+  // const onDeviceOrientation = (event: DeviceOrientationEvent) => {
+  //   const { absolute, alpha, beta, gamma } = event;
+  //   player.send(
+  //     JSON.stringify({ width, height, absolute, alpha, beta, gamma }),
+  //   );
+  // };
+
+  /**
+   * TODO: @mysterycommand - maybe type this? I'm not crazy about the API though
+   * maybe reimplement but do less, modern browsers only, etc.
+   *
+   * @see: https://github.com/dorukeker/gyronorm.js#how-to-use
+   */
+  const onData = (data: {
+    do: { alpha: number; beta: number; gamma: number; absolute: boolean };
+    dm: {
+      alpha: number;
+      beta: number;
+      gamma: number;
+
+      x: number;
+      y: number;
+      z: number;
+
+      gx: number;
+      gy: number;
+      gz: number;
+    };
+  }) => {
+    const {
+      do: { absolute, alpha, beta, gamma },
+    } = data;
+
     player.send(
       JSON.stringify({ width, height, absolute, alpha, beta, gamma }),
     );
@@ -50,7 +85,10 @@ auth.signInAnonymously().then(userCredential => {
     main.className = 'error';
     h1.textContent = 'sorry player';
 
-    window.removeEventListener('deviceorientation', onDeviceOrientation);
+    // window.removeEventListener('deviceorientation', onDeviceOrientation);
+    init.then(() => {
+      gyro.stop();
+    });
   };
 
   const randomBytes = (size = 2) => {
@@ -60,8 +98,7 @@ auth.signInAnonymously().then(userCredential => {
       crypto.getRandomValues(raw);
     }
 
-    const bytes = Buffer.from(raw.buffer);
-    return bytes;
+    return Buffer.from(raw.buffer);
   };
 
   const playerUuid = randomBytes()
@@ -104,7 +141,10 @@ auth.signInAnonymously().then(userCredential => {
         }),
       );
 
-      window.addEventListener('deviceorientation', onDeviceOrientation);
+      // window.addEventListener('deviceorientation', onDeviceOrientation);
+      init.then(() => {
+        gyro.start();
+      });
     })
     .on('error', onErrorCloseOrEnd)
     .on('close', onErrorCloseOrEnd)
