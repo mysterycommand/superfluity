@@ -118,17 +118,21 @@ auth.signInAnonymously().then(userCredential => {
           li.style.height = `${height / 4}px`;
 
           const h1 = Math.random() * 360;
-          const h2 = (h1 + 180) % 360;
+          const h2 = (h1 + 120 * (1 + Math.round(Math.random()))) % 360;
 
           // TODO: @mysterycommand - more here, radial-gradients?
-          li.style.background = `linear-gradient(hsl(${h1}, 80%, 50%), hsl(${h2}, 80%, 50%))`;
+          li.style.background = !!Math.round(Math.random())
+            ? `linear-gradient(hsl(${h1}, 80%, 50%), hsl(${h2}, 80%, 50%))`
+            : `radial-gradient(circle at center, hsl(${h1}, 80%, 50%), hsl(${h2}, 80%, 50%))`;
         } else {
+          const xf = [
+            `rotateY(${alpha.toFixed(2)}deg)`,
+            `rotateX(${beta.toFixed(2)}deg)`,
+            `rotateZ(${gamma.toFixed(2)}deg)`,
+          ];
           // TODO: @mysterycommand - more here, lerp toward these values for smoother look
-          li.style.transform = [
-            `rotateY(${alpha - 180}deg)`,
-            `rotateX(${beta - 90}deg)`,
-            `rotateZ(${-gamma}deg)`,
-          ].join(' ');
+          li.style.transform = xf.join(' ');
+          li.innerText = xf.join('\n');
         }
       });
 
