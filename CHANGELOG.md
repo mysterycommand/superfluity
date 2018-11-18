@@ -1,3 +1,14 @@
+# [1.5.0](https://github.com/fartts/superfluity/compare/v1.4.0...v1.5.0) (2018-11-18)
+
+
+### Features
+
+* **host, player:** make useMotion a common switch, add some mobile web app stuff to player's html, ([f189cd3](https://github.com/fartts/superfluity/commit/f189cd3))
+* **package.json, yarn.lock:** add gyronorm dep ([d668962](https://github.com/fartts/superfluity/commit/d668962))
+* **player:** make the main view unscrollable ([a92b831](https://github.com/fartts/superfluity/commit/a92b831))
+* **player:** use gyronorm for orientation data ([71c231e](https://github.com/fartts/superfluity/commit/71c231e))
+* **types:** add a Guest type that's a player's host instance plus the player's orientation and acce ([6c39ebd](https://github.com/fartts/superfluity/commit/6c39ebd))
+
 # [1.4.0](https://github.com/fartts/superfluity/compare/v1.3.1...v1.4.0) (2018-11-09)
 
 
