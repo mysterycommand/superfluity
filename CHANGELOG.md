@@ -1,3 +1,11 @@
+# [1.7.0](https://github.com/fartts/superfluity/compare/v1.6.0...v1.7.0) (2018-11-18)
+
+
+### Features
+
+* **box2d:** add a box2d world for each guest, it's only got one ball in it for now, but it works da ([cbdb658](https://github.com/fartts/superfluity/commit/cbdb658))
+* **host:** adds a canvas and some styling for it, also inverts the z(?) axis ([6db4d85](https://github.com/fartts/superfluity/commit/6db4d85))
+
 # [1.6.0](https://github.com/fartts/superfluity/compare/v1.5.0...v1.6.0) (2018-11-18)
 
 
