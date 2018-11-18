@@ -4,6 +4,7 @@ import 'firebase/database';
 import Peer from 'simple-peer';
 
 import { auth, database } from '../lib/firebase';
+import { DataSnapshot, SignalData } from '../lib/types';
 
 import './main.css';
 
@@ -18,6 +19,16 @@ button.addEventListener('click', event => {
   event.preventDefault();
   location.reload(true);
 });
+
+const randomBytes = (size = 2) => {
+  const raw = new Uint8Array(size);
+
+  if (size > 0) {
+    crypto.getRandomValues(raw);
+  }
+
+  return Buffer.from(raw.buffer);
+};
 
 auth.signInAnonymously().then(userCredential => {
   if (!(userCredential && userCredential.user)) {
@@ -39,6 +50,15 @@ auth.signInAnonymously().then(userCredential => {
 
   const player = new Peer({ initiator: true, trickle: false });
 
+  const onSignal = (data: SignalData) => {
+    if (data.type !== 'offer') {
+      return;
+    }
+
+    main.className = 'calling';
+    offer.set({ ...data, uid });
+  };
+
   const onDeviceOrientation = (event: DeviceOrientationEvent) => {
     const { absolute, alpha, beta, gamma } = event;
     player.send(
@@ -46,35 +66,34 @@ auth.signInAnonymously().then(userCredential => {
     );
   };
 
-  /**
-   * TODO: @mysterycommand - maybe type this? I'm not crazy about the API though
-   * maybe reimplement but do less, modern browsers only, etc.
-   *
-   * @see: https://github.com/dorukeker/gyronorm.js#how-to-use
-   */
-  const onData = (data: {
-    do: { alpha: number; beta: number; gamma: number; absolute: boolean };
-    dm: {
-      alpha: number;
-      beta: number;
-      gamma: number;
+  const onConnect = () => {
+    main.className = 'connected';
+    h1.textContent = `player: ${playerUuid}`;
 
-      x: number;
-      y: number;
-      z: number;
-
-      gx: number;
-      gy: number;
-      gz: number;
-    };
-  }) => {
-    const {
-      do: { absolute, alpha, beta, gamma },
-    } = data;
-
+    const time = new Date().toLocaleTimeString();
     player.send(
-      JSON.stringify({ width, height, absolute, alpha, beta, gamma }),
+      JSON.stringify({
+        width,
+        height,
+        connection: connection.key,
+        player: playerUuid,
+        time,
+      }),
     );
+
+    window.addEventListener('deviceorientation', onDeviceOrientation);
+  };
+
+  const onData = (data: string) => {
+    const parsed = JSON.parse(data);
+
+    if (parsed.time) {
+      const message = JSON.stringify(parsed, null, 2);
+      const time = new Date().toLocaleTimeString();
+
+      // tslint:disable-next-line no-console
+      console.log(`player.on 'data':\n/* ${time} */\n${message}\n\n`);
+    }
   };
 
   const onErrorCloseOrEnd = () => {
@@ -84,74 +103,7 @@ auth.signInAnonymously().then(userCredential => {
     window.removeEventListener('deviceorientation', onDeviceOrientation);
   };
 
-  const randomBytes = (size = 2) => {
-    const raw = new Uint8Array(size);
-
-    if (size > 0) {
-      crypto.getRandomValues(raw);
-    }
-
-    return Buffer.from(raw.buffer);
-  };
-
-  const playerUuid = randomBytes()
-    .toString('hex')
-    .slice(0, 7);
-
-  // tslint:disable-next-line no-console
-  console.log(
-    `connection:\n${JSON.stringify(
-      {
-        connection: connection.key,
-        player: playerUuid,
-      },
-      null,
-      2,
-    )}\n\n`,
-  );
-
-  player
-    .on('signal', data => {
-      if (data.type !== 'offer') {
-        return;
-      }
-
-      main.className = 'calling';
-      offer.set({ ...data, uid });
-    })
-    .on('connect', () => {
-      main.className = 'connected';
-      h1.textContent = `player: ${playerUuid}`;
-
-      const time = new Date().toLocaleTimeString();
-      player.send(
-        JSON.stringify({
-          width,
-          height,
-          connection: connection.key,
-          player: playerUuid,
-          time,
-        }),
-      );
-
-      window.addEventListener('deviceorientation', onDeviceOrientation);
-    })
-    .on('error', onErrorCloseOrEnd)
-    .on('close', onErrorCloseOrEnd)
-    .on('end', onErrorCloseOrEnd)
-    .on('data', data => {
-      const parsed = JSON.parse(data);
-
-      if (parsed.time) {
-        const message = JSON.stringify(parsed, null, 2);
-        const time = new Date().toLocaleTimeString();
-
-        // tslint:disable-next-line no-console
-        console.log(`player.on 'data':\n/* ${time} */\n${message}\n\n`);
-      }
-    });
-
-  answer.on('value', data => {
+  const onAnswer = (data: DataSnapshot | null) => {
     if (!(data && data.val())) {
       return;
     }
@@ -163,5 +115,19 @@ auth.signInAnonymously().then(userCredential => {
 
     main.className = 'receiving';
     player.signal(data.val());
-  });
+  };
+
+  const playerUuid = randomBytes()
+    .toString('hex')
+    .slice(0, 7);
+
+  player
+    .on('signal', onSignal)
+    .on('connect', onConnect)
+    .on('error', onErrorCloseOrEnd)
+    .on('close', onErrorCloseOrEnd)
+    .on('end', onErrorCloseOrEnd)
+    .on('data', onData);
+
+  answer.on('value', onAnswer);
 });
