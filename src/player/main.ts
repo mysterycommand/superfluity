@@ -38,7 +38,7 @@ auth.signInAnonymously().then(userCredential => {
   }
 
   main.className = 'signed-in';
-  h1.textContent = 'logged in';
+  h1.innerText = 'logged in';
   const { uid } = userCredential.user;
 
   const connections = database.ref('/connections');
@@ -52,17 +52,11 @@ auth.signInAnonymously().then(userCredential => {
   connection.onDisconnect().set(null);
 
   const player = new Peer({ initiator: true, trickle: false });
-  const poseSensor = new PoseSensor(
-    0.98,
-    0.04,
-    false,
-    process.env.NODE_ENV === 'development',
-  );
+  const poseSensor = new PoseSensor(0.98, 0.04, false, false);
   let frameId = -1;
 
   const send = (t: DOMHighResTimeStamp) => {
     requestAnimationFrame(send);
-    // console.log(poseSensor.getOrientation());
     const o = poseSensor.getOrientation();
     player.send(JSON.stringify({ orientation: [].slice.call(o) }));
   };
@@ -73,13 +67,13 @@ auth.signInAnonymously().then(userCredential => {
     }
 
     main.className = 'calling';
-    h1.textContent = 'connecting…';
+    h1.innerText = 'connecting…';
     offer.set({ ...data, uid });
   };
 
   const onConnect = () => {
     main.className = 'connected';
-    h1.textContent = `${playerUuid}`;
+    h1.innerText = `${playerUuid}`;
 
     const time = new Date().toLocaleTimeString();
     player.send(
@@ -113,7 +107,7 @@ auth.signInAnonymously().then(userCredential => {
 
   const onErrorCloseOrEnd = () => {
     main.className = 'error';
-    h1.textContent = 'sorry player something went wrong';
+    h1.innerHTML = 'sorry player<br />something went wrong';
     cancelAnimationFrame(frameId);
   };
 

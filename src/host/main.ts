@@ -51,10 +51,12 @@ const draw = (t: DOMHighResTimeStamp) => {
 
     li.style.transform = xf;
     if (process.env.NODE_ENV === 'development') {
-      li.innerText = matrix.reduce(
-        (str, v, i) => (str + (i % 4) ? `${v}\n` : `${v}, `),
-        '',
-      );
+      li.style.fontFamily = 'monospace';
+      li.style.fontSize = '0.75em';
+      li.innerHTML = matrix.reduce((str, v, i) => {
+        const vf = (Math.abs(v) === v ? '&nbsp;' : '') + v.toFixed(2);
+        return str + ((i + 1) % 4 === 0 ? `${vf}<br />` : `${vf}, `);
+      }, '');
     }
   });
 };
