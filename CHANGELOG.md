@@ -1,3 +1,12 @@
+# [1.6.0](https://github.com/fartts/superfluity/compare/v1.5.0...v1.6.0) (2018-11-18)
+
+
+### Features
+
+* **host, player:** a bunch of little tweaks to make things look nicer ([040ab57](https://github.com/fartts/superfluity/commit/040ab57))
+* **host, player:** add fusion pose sensor, get orientation as quaternion and convert to rotation ma ([6549d7f](https://github.com/fartts/superfluity/commit/6549d7f))
+* **package.json, yarn.lock:** add cardboard-vr-display dependency ([cdac997](https://github.com/fartts/superfluity/commit/cdac997))
+
 # [1.5.0](https://github.com/fartts/superfluity/compare/v1.4.0...v1.5.0) (2018-11-18)
 
 
