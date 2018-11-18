@@ -6,6 +6,8 @@ import Peer from 'simple-peer';
 import { auth, database } from '../lib/firebase';
 import { DataSnapshot, SignalData } from '../lib/common';
 
+import PoseSensor from 'cardboard-vr-display/src/sensor-fusion/fusion-pose-sensor';
+
 import './main.css';
 
 const main = document.querySelector('main') as HTMLMainElement;
@@ -30,15 +32,6 @@ const randomBytes = (size = 2) => {
   return Buffer.from(raw.buffer);
 };
 
-// window.addEventListener('orientationchange', () => {
-//   const { orientation } = window;
-
-//   const o = parseInt(`${orientation}`, 10);
-//   const isPortrait = o % 180 === 0;
-
-//   main.style.transform = isPortrait ? '' : `rotate(${-o}deg)`;
-// });
-
 auth.signInAnonymously().then(userCredential => {
   if (!(userCredential && userCredential.user)) {
     return;
@@ -59,38 +52,20 @@ auth.signInAnonymously().then(userCredential => {
   connection.onDisconnect().set(null);
 
   const player = new Peer({ initiator: true, trickle: false });
-
-  const device = {
-    accelerometer: { alpha: 0, beta: 0, gamma: 0 },
-    orientation: { alpha: 0, beta: 90, gamma: 0 },
-    gyroscope: { alpha: 0, beta: 0, gamma: 0 },
-  };
-
-  let pt = performance.now();
-  let dt = 0;
+  const poseSensor = new PoseSensor(
+    0.98,
+    0.04,
+    false,
+    process.env.NODE_ENV === 'development',
+  );
+  let frameId = -1;
 
   const send = (t: DOMHighResTimeStamp) => {
     requestAnimationFrame(send);
-
-    dt = t - pt;
-    pt = t;
-
-    const {
-      accelerometer: { alpha: aa, beta: ab, gamma: ag },
-      orientation: { alpha: oa, beta: ob, gamma: og },
-      gyroscope: { alpha: ga, beta: gb, gamma: gg },
-    } = device;
-
-    device.orientation = {
-      alpha: 0.98 * (oa + ga * (dt / 1000)) + 0.02 * aa,
-      beta: 0.98 * (ob + gb * (dt / 1000)) + 0.02 * ab,
-      gamma: 0.98 * (og - gg * (dt / 1000)) + 0.02 * ag,
-    };
-
-    player.send(JSON.stringify(device.orientation));
+    // console.log(poseSensor.getOrientation());
+    const o = poseSensor.getOrientation();
+    player.send(JSON.stringify({ orientation: [].slice.call(o) }));
   };
-
-  requestAnimationFrame(send);
 
   const onSignal = (data: SignalData) => {
     if (data.type !== 'offer') {
@@ -100,30 +75,6 @@ auth.signInAnonymously().then(userCredential => {
     main.className = 'calling';
     h1.textContent = 'connecting…';
     offer.set({ ...data, uid });
-  };
-
-  const onDeviceOrientation = (event: DeviceOrientationEvent) => {
-    const { alpha, beta, gamma } = event;
-    device.accelerometer = {
-      alpha: alpha || 0,
-      beta: beta || 0,
-      gamma: gamma || 0,
-    };
-    // player.send(JSON.stringify({ alpha, beta, gamma }));
-  };
-
-  const onDeviceMotion = (event: DeviceMotionEvent) => {
-    if (!event.rotationRate) {
-      return;
-    }
-
-    const { alpha, beta, gamma } = event.rotationRate;
-    device.gyroscope = {
-      alpha: alpha || 0,
-      beta: beta || 0,
-      gamma: gamma || 0,
-    };
-    // player.send(JSON.stringify({ alpha, beta, gamma }));
   };
 
   const onConnect = () => {
@@ -141,8 +92,7 @@ auth.signInAnonymously().then(userCredential => {
       }),
     );
 
-    window.addEventListener('devicemotion', onDeviceMotion);
-    window.addEventListener('deviceorientation', onDeviceOrientation);
+    frameId = requestAnimationFrame(send);
   };
 
   const onData = (data: string) => {
@@ -164,9 +114,7 @@ auth.signInAnonymously().then(userCredential => {
   const onErrorCloseOrEnd = () => {
     main.className = 'error';
     h1.textContent = 'sorry player something went wrong';
-
-    window.removeEventListener('devicemotion', onDeviceMotion);
-    window.removeEventListener('deviceorientation', onDeviceOrientation);
+    cancelAnimationFrame(frameId);
   };
 
   const onAnswer = (data: DataSnapshot | null) => {

@@ -9,6 +9,6 @@ export interface SignalData {
 }
 
 export interface Guest {
-  orientation: { alpha: number; beta: number; gamma: number };
+  orientation: number[];
   host: Instance;
 }

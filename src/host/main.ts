@@ -5,6 +5,7 @@ import { auth, database } from '../lib/firebase';
 import { DataSnapshot, SignalData, Guest } from '../lib/common';
 
 import './main.css';
+import compose from './compose';
 
 const ul = document.querySelector('ul') as HTMLUListElement;
 const pre = document.querySelector('pre') as HTMLPreElement;
@@ -45,15 +46,15 @@ const draw = (t: DOMHighResTimeStamp) => {
       return;
     }
 
-    const xf = [
-      `rotateX(${orientation.alpha}deg)`,
-      `rotateY(${orientation.beta}deg)`,
-      `rotateZ(${orientation.gamma}deg)`,
-    ];
+    const matrix = compose(orientation);
+    const xf = `matrix3d(${matrix.join(',')})`;
 
-    li.style.transform = xf.join(' ');
+    li.style.transform = xf;
     if (process.env.NODE_ENV === 'development') {
-      li.innerText = xf.join('\n');
+      li.innerText = matrix.reduce(
+        (str, v, i) => (str + (i % 4) ? `${v}\n` : `${v}, `),
+        '',
+      );
     }
   });
 };
@@ -94,7 +95,7 @@ auth.signInAnonymously().then(userCredential => {
 
     const host = new Peer({ initiator: false, trickle: false });
     guests[key] = {
-      orientation: { alpha: 0, beta: 0, gamma: 0 },
+      orientation: [0, 0, 0, 1],
       host,
     };
 
@@ -129,9 +130,7 @@ auth.signInAnonymously().then(userCredential => {
     };
 
     const onData = (data: string) => {
-      const { time, player, width, height, alpha, beta, gamma } = JSON.parse(
-        data,
-      );
+      const { time, player, width, height, orientation } = JSON.parse(data);
 
       if (time) {
         const localTime = new Date().toLocaleTimeString();
@@ -157,7 +156,7 @@ auth.signInAnonymously().then(userCredential => {
         return;
       }
 
-      guests[key].orientation = { alpha, beta, gamma };
+      guests[key].orientation = orientation;
     };
 
     const onOffer = (data: DataSnapshot | null) => {
