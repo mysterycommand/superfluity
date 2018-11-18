@@ -4,7 +4,7 @@ import 'firebase/database';
 import Peer from 'simple-peer';
 
 import { auth, database } from '../lib/firebase';
-import { DataSnapshot, SignalData } from '../lib/types';
+import { DataSnapshot, SignalData, useMotion } from '../lib/common';
 
 import './main.css';
 
@@ -32,8 +32,11 @@ const randomBytes = (size = 2) => {
 
 // window.addEventListener('orientationchange', () => {
 //   const { orientation } = window;
-//   const degrees = parseInt(`${orientation}`, 10);
-//   main.style.transform = `rotate(${-degrees}deg)`;
+
+//   const o = parseInt(`${orientation}`, 10);
+//   const isPortrait = o % 180 === 0;
+
+//   main.style.transform = isPortrait ? '' : `rotate(${-o}deg)`;
 // });
 
 auth.signInAnonymously().then(userCredential => {
@@ -72,14 +75,14 @@ auth.signInAnonymously().then(userCredential => {
     player.send(JSON.stringify({ width, height, alpha, beta, gamma }));
   };
 
-  // const onDeviceMotion = (event: DeviceMotionEvent) => {
-  //   if (!event.rotationRate) {
-  //     return;
-  //   }
+  const onDeviceMotion = (event: DeviceMotionEvent) => {
+    if (!event.rotationRate) {
+      return;
+    }
 
-  //   const { alpha, beta, gamma } = event.rotationRate;
-  //   player.send(JSON.stringify({ width, height, alpha, beta, gamma }));
-  // };
+    const { alpha, beta, gamma } = event.rotationRate;
+    player.send(JSON.stringify({ width, height, alpha, beta, gamma }));
+  };
 
   const onConnect = () => {
     main.className = 'connected';
@@ -96,8 +99,11 @@ auth.signInAnonymously().then(userCredential => {
       }),
     );
 
-    window.addEventListener('deviceorientation', onDeviceOrientation);
-    // window.addEventListener('devicemotion', onDeviceMotion);
+    if (useMotion) {
+      window.addEventListener('devicemotion', onDeviceMotion);
+    } else {
+      window.addEventListener('deviceorientation', onDeviceOrientation);
+    }
   };
 
   const onData = (data: string) => {
@@ -120,8 +126,11 @@ auth.signInAnonymously().then(userCredential => {
     main.className = 'error';
     h1.textContent = 'sorry player something went wrong';
 
-    window.removeEventListener('deviceorientation', onDeviceOrientation);
-    // window.removeEventListener('devicemotion', onDeviceMotion);
+    if (useMotion) {
+      window.removeEventListener('devicemotion', onDeviceMotion);
+    } else {
+      window.removeEventListener('deviceorientation', onDeviceOrientation);
+    }
   };
 
   const onAnswer = (data: DataSnapshot | null) => {

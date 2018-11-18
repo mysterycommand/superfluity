@@ -13,3 +13,5 @@ export interface Guest {
   orientation: { alpha: number; beta: number; gamma: number };
   host: Instance;
 }
+
+export const useMotion = true;

@@ -2,7 +2,7 @@ import Peer from 'simple-peer';
 import { toCanvas, QRCodeRenderersOptions } from 'qrcode';
 
 import { auth, database } from '../lib/firebase';
-import { DataSnapshot, SignalData, Guest } from '../lib/types';
+import { DataSnapshot, SignalData, Guest, useMotion } from '../lib/common';
 
 import './main.css';
 
@@ -48,7 +48,11 @@ const draw = (t: DOMHighResTimeStamp) => {
   Object.entries(guests).forEach(([key, { orientation, acceleration }]) => {
     orientation.alpha += acceleration.alpha * (dt / 1000);
     orientation.beta += acceleration.beta * (dt / 1000);
-    orientation.gamma += acceleration.gamma * (dt / 1000);
+    orientation.gamma -= acceleration.gamma * (dt / 1000);
+
+    orientation.alpha += -orientation.alpha * 0.01;
+    orientation.beta += -orientation.beta * 0.01;
+    orientation.gamma += -orientation.gamma * 0.01;
 
     const li = document.getElementById(`connection-${key}`);
     if (!li) {
@@ -56,9 +60,9 @@ const draw = (t: DOMHighResTimeStamp) => {
     }
 
     const xf = [
-      // `rotateX(${Math.round(orientation.alpha)}deg)`,
-      // `rotateY(${Math.round(orientation.beta)}deg)`,
-      `rotateZ(${Math.round(orientation.gamma)}deg)`,
+      `rotateX(${orientation.alpha}deg)`,
+      `rotateY(${orientation.beta}deg)`,
+      `rotateZ(${orientation.gamma}deg)`,
     ];
 
     li.style.transform = xf.join(' ');
@@ -168,8 +172,11 @@ auth.signInAnonymously().then(userCredential => {
         return;
       }
 
-      // guests[key].acceleration = { alpha, beta, gamma };
-      guests[key].orientation = { alpha, beta, gamma };
+      if (useMotion) {
+        guests[key].acceleration = { alpha, beta, gamma };
+      } else {
+        guests[key].orientation = { alpha, beta, gamma };
+      }
     };
 
     const onOffer = (data: DataSnapshot | null) => {
