@@ -56,9 +56,9 @@ const draw = (t: DOMHighResTimeStamp) => {
     }
 
     const xf = [
-      `rotateX(${Math.round(orientation.alpha)}deg)`,
-      `rotateY(${Math.round(orientation.beta)}deg)`,
-      `rotateZ(${Math.round(-orientation.gamma)}deg)`,
+      // `rotateX(${Math.round(orientation.alpha)}deg)`,
+      // `rotateY(${Math.round(orientation.beta)}deg)`,
+      `rotateZ(${Math.round(orientation.gamma)}deg)`,
     ];
 
     li.style.transform = xf.join(' ');
@@ -97,24 +97,22 @@ auth.signInAnonymously().then(userCredential => {
       return;
     }
 
+    const { key } = connection;
+
     const offer = connection.child('offer').ref;
     const answer = connection.child('answer').ref;
 
     const host = new Peer({ initiator: false, trickle: false });
-    guests[connection.key] = {
+    guests[key] = {
       acceleration: { alpha: 0, beta: 0, gamma: 0 },
       orientation: { alpha: 0, beta: 0, gamma: 0 },
       host,
     };
 
     const li = document.createElement('li');
-    li.id = `connection-${connection.key}`;
+    li.id = `connection-${key}`;
 
     const onSignal = (data: SignalData) => {
-      if (!(connection && connection.key)) {
-        return;
-      }
-
       if (data.type !== 'answer') {
         return;
       }
@@ -123,37 +121,25 @@ auth.signInAnonymously().then(userCredential => {
     };
 
     const onConnect = () => {
-      if (!(connection && connection.key)) {
-        return;
-      }
-
-      log(`connection: ${connection.key} - connected\n`);
+      log(`connection: ${key} - connected\n`);
 
       ul.appendChild(li);
 
       const time = new Date().toLocaleTimeString();
-      host.send(JSON.stringify({ host: connection.key, time }));
+      host.send(JSON.stringify({ host: key, time }));
     };
 
     const onErrorCloseOrEnd = (error?: Error) => {
-      if (!(connection && connection.key)) {
-        return;
-      }
-
       if (error) {
         log(`error:\n${error.message}\n\n`);
-      } else if (guests[connection.key]) {
-        log(`connection: ${connection.key} - disconnected\n`);
+      } else if (guests[key]) {
+        log(`connection: ${key} - disconnected\n`);
       }
 
-      removeGuest(connection.key);
+      removeGuest(key);
     };
 
     const onData = (data: string) => {
-      if (!(connection && connection.key)) {
-        return;
-      }
-
       const { time, player, width, height, alpha, beta, gamma } = JSON.parse(
         data,
       );
@@ -182,7 +168,8 @@ auth.signInAnonymously().then(userCredential => {
         return;
       }
 
-      guests[connection.key].acceleration = { alpha, beta, gamma };
+      // guests[key].acceleration = { alpha, beta, gamma };
+      guests[key].orientation = { alpha, beta, gamma };
     };
 
     const onOffer = (data: DataSnapshot | null) => {
@@ -209,8 +196,10 @@ auth.signInAnonymously().then(userCredential => {
       return;
     }
 
-    removeGuest(connection.key);
-    log(`connection: ${connection.key} - removed\n`);
+    const { key } = connection;
+
+    removeGuest(key);
+    log(`connection: ${key} - removed\n`);
   };
 
   connections.on('child_added', onConnectionAdded);
