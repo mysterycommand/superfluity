@@ -1,5 +1,10 @@
 @import '../main.css';
 
+main {
+  overflow: hidden;
+  position: fixed;
+}
+
 button {
   opacity: 0;
   height: 0;
