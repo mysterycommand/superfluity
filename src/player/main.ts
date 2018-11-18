@@ -4,7 +4,9 @@ import 'firebase/database';
 import Peer from 'simple-peer';
 
 import { auth, database } from '../lib/firebase';
-import { DataSnapshot, SignalData, useMotion } from '../lib/common';
+import { DataSnapshot, SignalData } from '../lib/common';
+
+import PoseSensor from 'cardboard-vr-display/src/sensor-fusion/fusion-pose-sensor';
 
 import './main.css';
 
@@ -30,22 +32,13 @@ const randomBytes = (size = 2) => {
   return Buffer.from(raw.buffer);
 };
 
-// window.addEventListener('orientationchange', () => {
-//   const { orientation } = window;
-
-//   const o = parseInt(`${orientation}`, 10);
-//   const isPortrait = o % 180 === 0;
-
-//   main.style.transform = isPortrait ? '' : `rotate(${-o}deg)`;
-// });
-
 auth.signInAnonymously().then(userCredential => {
   if (!(userCredential && userCredential.user)) {
     return;
   }
 
   main.className = 'signed-in';
-  h1.textContent = 'logged in';
+  h1.innerText = 'logged in';
   const { uid } = userCredential.user;
 
   const connections = database.ref('/connections');
@@ -59,6 +52,14 @@ auth.signInAnonymously().then(userCredential => {
   connection.onDisconnect().set(null);
 
   const player = new Peer({ initiator: true, trickle: false });
+  const poseSensor = new PoseSensor(0.98, 0.04, false, false);
+  let frameId = -1;
+
+  const send = (t: DOMHighResTimeStamp) => {
+    requestAnimationFrame(send);
+    const o = poseSensor.getOrientation();
+    player.send(JSON.stringify({ orientation: [].slice.call(o) }));
+  };
 
   const onSignal = (data: SignalData) => {
     if (data.type !== 'offer') {
@@ -66,27 +67,13 @@ auth.signInAnonymously().then(userCredential => {
     }
 
     main.className = 'calling';
-    h1.textContent = 'connecting…';
+    h1.innerText = 'connecting…';
     offer.set({ ...data, uid });
-  };
-
-  const onDeviceOrientation = (event: DeviceOrientationEvent) => {
-    const { alpha, beta, gamma } = event;
-    player.send(JSON.stringify({ width, height, alpha, beta, gamma }));
-  };
-
-  const onDeviceMotion = (event: DeviceMotionEvent) => {
-    if (!event.rotationRate) {
-      return;
-    }
-
-    const { alpha, beta, gamma } = event.rotationRate;
-    player.send(JSON.stringify({ width, height, alpha, beta, gamma }));
   };
 
   const onConnect = () => {
     main.className = 'connected';
-    h1.textContent = `${playerUuid}`;
+    h1.innerText = `${playerUuid}`;
 
     const time = new Date().toLocaleTimeString();
     player.send(
@@ -99,11 +86,7 @@ auth.signInAnonymously().then(userCredential => {
       }),
     );
 
-    if (useMotion) {
-      window.addEventListener('devicemotion', onDeviceMotion);
-    } else {
-      window.addEventListener('deviceorientation', onDeviceOrientation);
-    }
+    frameId = requestAnimationFrame(send);
   };
 
   const onData = (data: string) => {
@@ -124,13 +107,8 @@ auth.signInAnonymously().then(userCredential => {
 
   const onErrorCloseOrEnd = () => {
     main.className = 'error';
-    h1.textContent = 'sorry player something went wrong';
-
-    if (useMotion) {
-      window.removeEventListener('devicemotion', onDeviceMotion);
-    } else {
-      window.removeEventListener('deviceorientation', onDeviceOrientation);
-    }
+    h1.innerHTML = 'sorry player<br />something went wrong';
+    cancelAnimationFrame(frameId);
   };
 
   const onAnswer = (data: DataSnapshot | null) => {

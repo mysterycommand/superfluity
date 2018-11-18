@@ -2,9 +2,10 @@ import Peer from 'simple-peer';
 import { toCanvas, QRCodeRenderersOptions } from 'qrcode';
 
 import { auth, database } from '../lib/firebase';
-import { DataSnapshot, SignalData, Guest, useMotion } from '../lib/common';
+import { DataSnapshot, SignalData, Guest } from '../lib/common';
 
 import './main.css';
+import compose from './compose';
 
 const ul = document.querySelector('ul') as HTMLUListElement;
 const pre = document.querySelector('pre') as HTMLPreElement;
@@ -36,38 +37,26 @@ if (process.env.NODE_ENV === 'development') {
   Object.defineProperty(window, 'guests', { value: guests });
 }
 
-let pt = performance.now();
-let dt = 0;
-
 const draw = (t: DOMHighResTimeStamp) => {
   requestAnimationFrame(draw);
 
-  dt = t - pt;
-  pt = t;
-
-  Object.entries(guests).forEach(([key, { orientation, acceleration }]) => {
-    orientation.alpha += acceleration.alpha * (dt / 1000);
-    orientation.beta += acceleration.beta * (dt / 1000);
-    orientation.gamma -= acceleration.gamma * (dt / 1000);
-
-    orientation.alpha += -orientation.alpha * 0.01;
-    orientation.beta += -orientation.beta * 0.01;
-    orientation.gamma += -orientation.gamma * 0.01;
-
+  Object.entries(guests).forEach(([key, { orientation }]) => {
     const li = document.getElementById(`connection-${key}`);
     if (!li) {
       return;
     }
 
-    const xf = [
-      `rotateX(${orientation.alpha}deg)`,
-      `rotateY(${orientation.beta}deg)`,
-      `rotateZ(${orientation.gamma}deg)`,
-    ];
+    const matrix = compose(orientation);
+    const xf = `matrix3d(${matrix.join(',')})`;
 
-    li.style.transform = xf.join(' ');
+    li.style.transform = xf;
     if (process.env.NODE_ENV === 'development') {
-      li.innerText = xf.join('\n');
+      li.style.fontFamily = 'monospace';
+      li.style.fontSize = '0.75em';
+      li.innerHTML = matrix.reduce((str, v, i) => {
+        const vf = (Math.abs(v) === v ? '&nbsp;' : '') + v.toFixed(2);
+        return str + ((i + 1) % 4 === 0 ? `${vf}<br />` : `${vf}, `);
+      }, '');
     }
   });
 };
@@ -108,8 +97,7 @@ auth.signInAnonymously().then(userCredential => {
 
     const host = new Peer({ initiator: false, trickle: false });
     guests[key] = {
-      acceleration: { alpha: 0, beta: 0, gamma: 0 },
-      orientation: { alpha: 0, beta: 0, gamma: 0 },
+      orientation: [0, 0, 0, 1],
       host,
     };
 
@@ -144,9 +132,7 @@ auth.signInAnonymously().then(userCredential => {
     };
 
     const onData = (data: string) => {
-      const { time, player, width, height, alpha, beta, gamma } = JSON.parse(
-        data,
-      );
+      const { time, player, width, height, orientation } = JSON.parse(data);
 
       if (time) {
         const localTime = new Date().toLocaleTimeString();
@@ -172,11 +158,7 @@ auth.signInAnonymously().then(userCredential => {
         return;
       }
 
-      if (useMotion) {
-        guests[key].acceleration = { alpha, beta, gamma };
-      } else {
-        guests[key].orientation = { alpha, beta, gamma };
-      }
+      guests[key].orientation = orientation;
     };
 
     const onOffer = (data: DataSnapshot | null) => {
