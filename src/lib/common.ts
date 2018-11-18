@@ -9,9 +9,6 @@ export interface SignalData {
 }
 
 export interface Guest {
-  acceleration: { alpha: number; beta: number; gamma: number };
   orientation: { alpha: number; beta: number; gamma: number };
   host: Instance;
 }
-
-export const useMotion = true;

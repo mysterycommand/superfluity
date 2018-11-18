@@ -4,7 +4,7 @@ import 'firebase/database';
 import Peer from 'simple-peer';
 
 import { auth, database } from '../lib/firebase';
-import { DataSnapshot, SignalData, useMotion } from '../lib/common';
+import { DataSnapshot, SignalData } from '../lib/common';
 
 import './main.css';
 
@@ -60,6 +60,38 @@ auth.signInAnonymously().then(userCredential => {
 
   const player = new Peer({ initiator: true, trickle: false });
 
+  const device = {
+    accelerometer: { alpha: 0, beta: 0, gamma: 0 },
+    orientation: { alpha: 0, beta: 90, gamma: 0 },
+    gyroscope: { alpha: 0, beta: 0, gamma: 0 },
+  };
+
+  let pt = performance.now();
+  let dt = 0;
+
+  const send = (t: DOMHighResTimeStamp) => {
+    requestAnimationFrame(send);
+
+    dt = t - pt;
+    pt = t;
+
+    const {
+      accelerometer: { alpha: aa, beta: ab, gamma: ag },
+      orientation: { alpha: oa, beta: ob, gamma: og },
+      gyroscope: { alpha: ga, beta: gb, gamma: gg },
+    } = device;
+
+    device.orientation = {
+      alpha: 0.98 * (oa + ga * (dt / 1000)) + 0.02 * aa,
+      beta: 0.98 * (ob + gb * (dt / 1000)) + 0.02 * ab,
+      gamma: 0.98 * (og - gg * (dt / 1000)) + 0.02 * ag,
+    };
+
+    player.send(JSON.stringify(device.orientation));
+  };
+
+  requestAnimationFrame(send);
+
   const onSignal = (data: SignalData) => {
     if (data.type !== 'offer') {
       return;
@@ -72,7 +104,12 @@ auth.signInAnonymously().then(userCredential => {
 
   const onDeviceOrientation = (event: DeviceOrientationEvent) => {
     const { alpha, beta, gamma } = event;
-    player.send(JSON.stringify({ width, height, alpha, beta, gamma }));
+    device.accelerometer = {
+      alpha: alpha || 0,
+      beta: beta || 0,
+      gamma: gamma || 0,
+    };
+    // player.send(JSON.stringify({ alpha, beta, gamma }));
   };
 
   const onDeviceMotion = (event: DeviceMotionEvent) => {
@@ -81,7 +118,12 @@ auth.signInAnonymously().then(userCredential => {
     }
 
     const { alpha, beta, gamma } = event.rotationRate;
-    player.send(JSON.stringify({ width, height, alpha, beta, gamma }));
+    device.gyroscope = {
+      alpha: alpha || 0,
+      beta: beta || 0,
+      gamma: gamma || 0,
+    };
+    // player.send(JSON.stringify({ alpha, beta, gamma }));
   };
 
   const onConnect = () => {
@@ -99,11 +141,8 @@ auth.signInAnonymously().then(userCredential => {
       }),
     );
 
-    if (useMotion) {
-      window.addEventListener('devicemotion', onDeviceMotion);
-    } else {
-      window.addEventListener('deviceorientation', onDeviceOrientation);
-    }
+    window.addEventListener('devicemotion', onDeviceMotion);
+    window.addEventListener('deviceorientation', onDeviceOrientation);
   };
 
   const onData = (data: string) => {
@@ -126,11 +165,8 @@ auth.signInAnonymously().then(userCredential => {
     main.className = 'error';
     h1.textContent = 'sorry player something went wrong';
 
-    if (useMotion) {
-      window.removeEventListener('devicemotion', onDeviceMotion);
-    } else {
-      window.removeEventListener('deviceorientation', onDeviceOrientation);
-    }
+    window.removeEventListener('devicemotion', onDeviceMotion);
+    window.removeEventListener('deviceorientation', onDeviceOrientation);
   };
 
   const onAnswer = (data: DataSnapshot | null) => {
