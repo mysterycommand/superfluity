@@ -6,9 +6,16 @@
   ],
   "rules": {
     "interface-name": false,
+    "no-bitwise": false,
     "object-literal-sort-keys": false,
     "ordered-imports": false,
-    "prettier": true
+    "prettier": true,
+    "variable-name": {
+      "options": [
+        "check-format",
+        "allow-leading-underscore"
+      ]
+    }
   },
   "rulesDirectory": [
     "tslint-plugin-prettier"

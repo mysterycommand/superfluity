@@ -41,6 +41,7 @@ ul {
 }
 
 li {
+  position: relative;
   list-style-type: none;
   margin: 4px;
 
@@ -49,4 +50,13 @@ li {
   justify-content: center;
 
   font-weight: bold;
+  box-shadow: 0px 4px 32px rgba(0, 0, 0, 0.65);
+}
+
+li > canvas {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
 }

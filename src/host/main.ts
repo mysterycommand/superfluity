@@ -6,6 +6,9 @@ import { DataSnapshot, SignalData, Guest } from '../lib/common';
 
 import './main.css';
 import compose from './compose';
+import makeWorld, { ptm } from './make-world';
+import World from '../box2d/dynamics/world';
+import Vec2 from '../box2d/common/math/vec2';
 
 const ul = document.querySelector('ul') as HTMLUListElement;
 const pre = document.querySelector('pre') as HTMLPreElement;
@@ -46,16 +49,23 @@ const draw = (t: DOMHighResTimeStamp) => {
       return;
     }
 
+    const p = li.querySelector('p');
+    if (!p) {
+      return;
+    }
+
     const matrix = compose(orientation);
+    matrix[1] = -matrix[1];
+    matrix[4] = -matrix[4];
     const xf = `matrix3d(${matrix.join(',')})`;
 
     li.style.transform = xf;
     if (process.env.NODE_ENV === 'development') {
-      li.style.fontFamily = 'monospace';
-      li.style.fontSize = '0.75em';
-      li.innerHTML = matrix.reduce((str, v, i) => {
+      p.style.fontFamily = 'monospace';
+      p.style.fontSize = '0.5em';
+      p.innerHTML = matrix.reduce((str, v, i) => {
         const vf = (Math.abs(v) === v ? '&nbsp;' : '') + v.toFixed(2);
-        return str + ((i + 1) % 4 === 0 ? `${vf}<br />` : `${vf}, `);
+        return str + ((i + 1) % 4 === 0 ? `${vf}&nbsp;<br />` : `${vf}, `);
       }, '');
     }
   });
@@ -104,6 +114,11 @@ auth.signInAnonymously().then(userCredential => {
     const li = document.createElement('li');
     li.id = `connection-${key}`;
 
+    const c = document.createElement('canvas');
+    li.append(c);
+
+    let world: World;
+
     const onSignal = (data: SignalData) => {
       if (data.type !== 'answer') {
         return;
@@ -141,9 +156,17 @@ auth.signInAnonymously().then(userCredential => {
           `\nplayer: ${player} - added\nplayer time: ${time}\nhost time: ${localTime}\n\n`,
         );
 
-        li.style.width = `${width / 2}px`;
-        li.style.height = `${height / 2}px`;
-        li.innerText = player;
+        li.style.width = c.style.width = `${width / 2}px`;
+        li.style.height = c.style.height = `${height / 2}px`;
+
+        c.width = width / 2;
+        c.height = height / 2;
+
+        world = makeWorld(c.getContext('2d') as CanvasRenderingContext2D);
+
+        const p = document.createElement('p');
+        li.append(p);
+        p.innerText = player;
 
         const h1 = Math.random() * 360;
         const h2 = (h1 + 120 * (1 + Math.round(Math.random()))) % 360;
@@ -157,6 +180,12 @@ auth.signInAnonymously().then(userCredential => {
         host.send(JSON.stringify({ bkgd }));
         return;
       }
+
+      const [y, x] = compose(orientation);
+      const gravity = new Vec2(-x, y);
+      gravity.Normalize();
+      gravity.Multiply(ptm);
+      world.SetGravity(gravity);
 
       guests[key].orientation = orientation;
     };
