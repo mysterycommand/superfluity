@@ -6,6 +6,9 @@ import { DataSnapshot, SignalData, Guest } from '../lib/common';
 
 import './main.css';
 import compose from './compose';
+import makeWorld, { ptm } from './make-world';
+import World from '../box2d/dynamics/world';
+import Vec2 from '../box2d/common/math/vec2';
 
 const ul = document.querySelector('ul') as HTMLUListElement;
 const pre = document.querySelector('pre') as HTMLPreElement;
@@ -114,6 +117,8 @@ auth.signInAnonymously().then(userCredential => {
     const c = document.createElement('canvas');
     li.append(c);
 
+    let world: World;
+
     const onSignal = (data: SignalData) => {
       if (data.type !== 'answer') {
         return;
@@ -157,6 +162,8 @@ auth.signInAnonymously().then(userCredential => {
         c.width = width / 2;
         c.height = height / 2;
 
+        world = makeWorld(c.getContext('2d') as CanvasRenderingContext2D);
+
         const p = document.createElement('p');
         li.append(p);
         p.innerText = player;
@@ -173,6 +180,12 @@ auth.signInAnonymously().then(userCredential => {
         host.send(JSON.stringify({ bkgd }));
         return;
       }
+
+      const [y, x] = compose(orientation);
+      const gravity = new Vec2(-x, y);
+      gravity.Normalize();
+      gravity.Multiply(ptm);
+      world.SetGravity(gravity);
 
       guests[key].orientation = orientation;
     };
