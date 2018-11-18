@@ -30,6 +30,12 @@ const randomBytes = (size = 2) => {
   return Buffer.from(raw.buffer);
 };
 
+// window.addEventListener('orientationchange', () => {
+//   const { orientation } = window;
+//   const degrees = parseInt(`${orientation}`, 10);
+//   main.style.transform = `rotate(${-degrees}deg)`;
+// });
+
 auth.signInAnonymously().then(userCredential => {
   if (!(userCredential && userCredential.user)) {
     return;
@@ -61,21 +67,19 @@ auth.signInAnonymously().then(userCredential => {
     offer.set({ ...data, uid });
   };
 
-  // const onDeviceOrientation = (event: DeviceOrientationEvent) => {
-  //   const { absolute, alpha, beta, gamma } = event;
-  //   player.send(
-  //     JSON.stringify({ width, height, absolute, alpha, beta, gamma }),
-  //   );
-  // };
-
-  const onDeviceMotion = (event: DeviceMotionEvent) => {
-    if (!event.rotationRate) {
-      return;
-    }
-
-    const { alpha, beta, gamma } = event.rotationRate;
+  const onDeviceOrientation = (event: DeviceOrientationEvent) => {
+    const { alpha, beta, gamma } = event;
     player.send(JSON.stringify({ width, height, alpha, beta, gamma }));
   };
+
+  // const onDeviceMotion = (event: DeviceMotionEvent) => {
+  //   if (!event.rotationRate) {
+  //     return;
+  //   }
+
+  //   const { alpha, beta, gamma } = event.rotationRate;
+  //   player.send(JSON.stringify({ width, height, alpha, beta, gamma }));
+  // };
 
   const onConnect = () => {
     main.className = 'connected';
@@ -92,8 +96,8 @@ auth.signInAnonymously().then(userCredential => {
       }),
     );
 
-    // window.addEventListener('deviceorientation', onDeviceOrientation);
-    window.addEventListener('devicemotion', onDeviceMotion);
+    window.addEventListener('deviceorientation', onDeviceOrientation);
+    // window.addEventListener('devicemotion', onDeviceMotion);
   };
 
   const onData = (data: string) => {
@@ -116,8 +120,8 @@ auth.signInAnonymously().then(userCredential => {
     main.className = 'error';
     h1.textContent = 'sorry player something went wrong';
 
-    // window.removeEventListener('deviceorientation', onDeviceOrientation);
-    window.removeEventListener('devicemotion', onDeviceMotion);
+    window.removeEventListener('deviceorientation', onDeviceOrientation);
+    // window.removeEventListener('devicemotion', onDeviceMotion);
   };
 
   const onAnswer = (data: DataSnapshot | null) => {
