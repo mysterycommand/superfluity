@@ -61,11 +61,20 @@ auth.signInAnonymously().then(userCredential => {
     offer.set({ ...data, uid });
   };
 
-  const onDeviceOrientation = (event: DeviceOrientationEvent) => {
-    const { absolute, alpha, beta, gamma } = event;
-    player.send(
-      JSON.stringify({ width, height, absolute, alpha, beta, gamma }),
-    );
+  // const onDeviceOrientation = (event: DeviceOrientationEvent) => {
+  //   const { absolute, alpha, beta, gamma } = event;
+  //   player.send(
+  //     JSON.stringify({ width, height, absolute, alpha, beta, gamma }),
+  //   );
+  // };
+
+  const onDeviceMotion = (event: DeviceMotionEvent) => {
+    if (!event.rotationRate) {
+      return;
+    }
+
+    const { alpha, beta, gamma } = event.rotationRate;
+    player.send(JSON.stringify({ width, height, alpha, beta, gamma }));
   };
 
   const onConnect = () => {
@@ -83,7 +92,8 @@ auth.signInAnonymously().then(userCredential => {
       }),
     );
 
-    window.addEventListener('deviceorientation', onDeviceOrientation);
+    // window.addEventListener('deviceorientation', onDeviceOrientation);
+    window.addEventListener('devicemotion', onDeviceMotion);
   };
 
   const onData = (data: string) => {
@@ -106,7 +116,8 @@ auth.signInAnonymously().then(userCredential => {
     main.className = 'error';
     h1.textContent = 'sorry player something went wrong';
 
-    window.removeEventListener('deviceorientation', onDeviceOrientation);
+    // window.removeEventListener('deviceorientation', onDeviceOrientation);
+    window.removeEventListener('devicemotion', onDeviceMotion);
   };
 
   const onAnswer = (data: DataSnapshot | null) => {
