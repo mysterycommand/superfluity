@@ -1,7 +1,8 @@
-import Peer, { Instance } from 'simple-peer';
+import Peer from 'simple-peer';
 import { toCanvas, QRCodeRenderersOptions } from 'qrcode';
 
 import { auth, database } from '../lib/firebase';
+import { DataSnapshot, SignalData, Guest, useMotion } from '../lib/common';
 
 import './main.css';
 
@@ -21,7 +22,6 @@ const { href } = location;
 const playerUrl = href.replace('host', 'player');
 const qrcodeOpts: QRCodeRenderersOptions = {
   color: { light: '#ffffff66' },
-  scale: 3,
 };
 
 toCanvas(canvas, playerUrl, qrcodeOpts, error => {
@@ -31,18 +31,60 @@ toCanvas(canvas, playerUrl, qrcodeOpts, error => {
   }
 });
 
+const guests: Record<string, Guest> = {};
+if (process.env.NODE_ENV === 'development') {
+  Object.defineProperty(window, 'guests', { value: guests });
+}
+
+let pt = performance.now();
+let dt = 0;
+
+const draw = (t: DOMHighResTimeStamp) => {
+  requestAnimationFrame(draw);
+
+  dt = t - pt;
+  pt = t;
+
+  Object.entries(guests).forEach(([key, { orientation, acceleration }]) => {
+    orientation.alpha += acceleration.alpha * (dt / 1000);
+    orientation.beta += acceleration.beta * (dt / 1000);
+    orientation.gamma -= acceleration.gamma * (dt / 1000);
+
+    orientation.alpha += -orientation.alpha * 0.01;
+    orientation.beta += -orientation.beta * 0.01;
+    orientation.gamma += -orientation.gamma * 0.01;
+
+    const li = document.getElementById(`connection-${key}`);
+    if (!li) {
+      return;
+    }
+
+    const xf = [
+      `rotateX(${orientation.alpha}deg)`,
+      `rotateY(${orientation.beta}deg)`,
+      `rotateZ(${orientation.gamma}deg)`,
+    ];
+
+    li.style.transform = xf.join(' ');
+    if (process.env.NODE_ENV === 'development') {
+      li.innerText = xf.join('\n');
+    }
+  });
+};
+
+requestAnimationFrame(draw);
+
 auth.signInAnonymously().then(userCredential => {
   if (!(userCredential && userCredential.user)) {
     return;
   }
 
   const { uid } = userCredential.user;
-  const guests: Record<string, Instance> = {};
-  Object.defineProperty(window, 'guests', { value: guests });
+  const connections = database.ref('/connections');
 
   const removeGuest = (key: string) => {
     if (guests[key]) {
-      const host = guests[key];
+      const { host } = guests[key];
       host.destroy();
 
       delete guests[key];
@@ -54,99 +96,119 @@ auth.signInAnonymously().then(userCredential => {
     }
   };
 
-  const connections = database.ref('/connections');
-  connections.on('child_added', connection => {
+  const onConnectionAdded = (connection: DataSnapshot | null) => {
     if (!(connection && connection.key)) {
       return;
     }
+
+    const { key } = connection;
 
     const offer = connection.child('offer').ref;
     const answer = connection.child('answer').ref;
 
     const host = new Peer({ initiator: false, trickle: false });
-    guests[connection.key] = host;
+    guests[key] = {
+      acceleration: { alpha: 0, beta: 0, gamma: 0 },
+      orientation: { alpha: 0, beta: 0, gamma: 0 },
+      host,
+    };
 
     const li = document.createElement('li');
-    li.id = `connection-${connection.key}`;
+    li.id = `connection-${key}`;
 
-    const onErrorCloseOrEnd = (error?: Error) => {
-      if (!(connection && connection.key)) {
+    const onSignal = (data: SignalData) => {
+      if (data.type !== 'answer') {
         return;
       }
 
-      if (error) {
-        log(`error:\n${error.message}\n\n`);
-      } else if (guests[connection.key]) {
-        log(`connection: ${connection.key} - disconnected\n`);
-      }
-
-      removeGuest(connection.key);
+      answer.set({ ...data, uid });
     };
 
-    host
-      .on('signal', data => {
-        if (data.type !== 'answer') {
-          return;
-        }
+    const onConnect = () => {
+      log(`connection: ${key} - connected\n`);
 
-        answer.set({ ...data, uid });
-      })
-      .on('connect', () => {
-        log(`connection: ${connection.key} - connected\n`);
+      ul.appendChild(li);
 
-        ul.appendChild(li);
+      const time = new Date().toLocaleTimeString();
+      host.send(JSON.stringify({ host: key, time }));
+    };
 
-        const time = new Date().toLocaleTimeString();
-        host.send(JSON.stringify({ host: connection.key, time }));
-      })
-      .on('error', onErrorCloseOrEnd)
-      .on('close', onErrorCloseOrEnd)
-      .on('end', onErrorCloseOrEnd)
-      .on('data', data => {
-        const { time, player, width, height, alpha, beta, gamma } = JSON.parse(
-          data,
+    const onErrorCloseOrEnd = (error?: Error) => {
+      if (error) {
+        log(`error:\n${error.message}\n\n`);
+      } else if (guests[key]) {
+        log(`connection: ${key} - disconnected\n`);
+      }
+
+      removeGuest(key);
+    };
+
+    const onData = (data: string) => {
+      const { time, player, width, height, alpha, beta, gamma } = JSON.parse(
+        data,
+      );
+
+      if (time) {
+        const localTime = new Date().toLocaleTimeString();
+
+        log(
+          `\nplayer: ${player} - added\nplayer time: ${time}\nhost time: ${localTime}\n\n`,
         );
 
-        if (time) {
-          const localTime = new Date().toLocaleTimeString();
+        li.style.width = `${width / 2}px`;
+        li.style.height = `${height / 2}px`;
+        li.innerText = player;
 
-          log(
-            `\nplayer: ${player} - added\nplayer time: ${time}\nhost time: ${localTime}\n\n`,
-          );
+        const h1 = Math.random() * 360;
+        const h2 = (h1 + 120 * (1 + Math.round(Math.random()))) % 360;
 
-          li.style.width = `${width / 4}px`;
-          li.style.height = `${height / 4}px`;
+        // TODO: @mysterycommand - more here, radial-gradients?
+        const bkgd = !!Math.round(Math.random())
+          ? `linear-gradient(hsl(${h1}, 80%, 50%), hsl(${h2}, 80%, 50%))`
+          : `radial-gradient(circle at center, hsl(${h1}, 80%, 50%), hsl(${h2}, 80%, 50%))`;
 
-          const h1 = Math.random() * 360;
-          const h2 = (h1 + 180) % 360;
+        li.style.background = bkgd;
+        host.send(JSON.stringify({ bkgd }));
+        return;
+      }
 
-          // TODO: @mysterycommand - more here, radial-gradients?
-          li.style.background = `linear-gradient(hsl(${h1}, 80%, 50%), hsl(${h2}, 80%, 50%))`;
-        } else {
-          // TODO: @mysterycommand - more here, lerp toward these values for smoother look
-          li.style.transform = [
-            `rotateY(${alpha - 180}deg)`,
-            `rotateX(${beta - 90}deg)`,
-            `rotateZ(${-gamma}deg)`,
-          ].join(' ');
-        }
-      });
+      if (useMotion) {
+        guests[key].acceleration = { alpha, beta, gamma };
+      } else {
+        guests[key].orientation = { alpha, beta, gamma };
+      }
+    };
 
-    offer.on('value', data => {
+    const onOffer = (data: DataSnapshot | null) => {
       if (!(data && data.val())) {
         return;
       }
 
       host.signal(data.val());
-    });
-  });
+    };
 
-  connections.on('child_removed', connection => {
+    host
+      .on('signal', onSignal)
+      .on('connect', onConnect)
+      .on('error', onErrorCloseOrEnd)
+      .on('close', onErrorCloseOrEnd)
+      .on('end', onErrorCloseOrEnd)
+      .on('data', onData);
+
+    offer.on('value', onOffer);
+  };
+
+  const onConnectionRemoved = (connection: DataSnapshot | null) => {
     if (!(connection && connection.key)) {
       return;
     }
 
-    removeGuest(connection.key);
-    log(`connection: ${connection.key} - removed\n`);
-  });
+    const { key } = connection;
+
+    removeGuest(key);
+    log(`connection: ${key} - removed\n`);
+  };
+
+  connections.on('child_added', onConnectionAdded);
+  connections.on('child_removed', onConnectionRemoved);
 });

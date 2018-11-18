@@ -4,6 +4,7 @@ import 'firebase/database';
 import Peer from 'simple-peer';
 
 import { auth, database } from '../lib/firebase';
+import { DataSnapshot, SignalData, useMotion } from '../lib/common';
 
 import './main.css';
 
@@ -19,12 +20,32 @@ button.addEventListener('click', event => {
   location.reload(true);
 });
 
+const randomBytes = (size = 2) => {
+  const raw = new Uint8Array(size);
+
+  if (size > 0) {
+    crypto.getRandomValues(raw);
+  }
+
+  return Buffer.from(raw.buffer);
+};
+
+// window.addEventListener('orientationchange', () => {
+//   const { orientation } = window;
+
+//   const o = parseInt(`${orientation}`, 10);
+//   const isPortrait = o % 180 === 0;
+
+//   main.style.transform = isPortrait ? '' : `rotate(${-o}deg)`;
+// });
+
 auth.signInAnonymously().then(userCredential => {
   if (!(userCredential && userCredential.user)) {
     return;
   }
 
   main.className = 'signed-in';
+  h1.textContent = 'logged in';
   const { uid } = userCredential.user;
 
   const connections = database.ref('/connections');
@@ -39,89 +60,80 @@ auth.signInAnonymously().then(userCredential => {
 
   const player = new Peer({ initiator: true, trickle: false });
 
+  const onSignal = (data: SignalData) => {
+    if (data.type !== 'offer') {
+      return;
+    }
+
+    main.className = 'calling';
+    h1.textContent = 'connecting…';
+    offer.set({ ...data, uid });
+  };
+
   const onDeviceOrientation = (event: DeviceOrientationEvent) => {
-    const { absolute, alpha, beta, gamma } = event;
+    const { alpha, beta, gamma } = event;
+    player.send(JSON.stringify({ width, height, alpha, beta, gamma }));
+  };
+
+  const onDeviceMotion = (event: DeviceMotionEvent) => {
+    if (!event.rotationRate) {
+      return;
+    }
+
+    const { alpha, beta, gamma } = event.rotationRate;
+    player.send(JSON.stringify({ width, height, alpha, beta, gamma }));
+  };
+
+  const onConnect = () => {
+    main.className = 'connected';
+    h1.textContent = `${playerUuid}`;
+
+    const time = new Date().toLocaleTimeString();
     player.send(
-      JSON.stringify({ width, height, absolute, alpha, beta, gamma }),
+      JSON.stringify({
+        width,
+        height,
+        connection: connection.key,
+        player: playerUuid,
+        time,
+      }),
     );
+
+    if (useMotion) {
+      window.addEventListener('devicemotion', onDeviceMotion);
+    } else {
+      window.addEventListener('deviceorientation', onDeviceOrientation);
+    }
+  };
+
+  const onData = (data: string) => {
+    const { host, time, bkgd } = JSON.parse(data);
+
+    if (time) {
+      if (process.env.NODE_ENV === 'development') {
+        const message = JSON.stringify({ host, time }, null, 2);
+        // tslint:disable-next-line no-console
+        console.log(`player.on 'data':\n${message}\n\n`);
+      }
+
+      return;
+    }
+
+    main.style.background = bkgd;
   };
 
   const onErrorCloseOrEnd = () => {
     main.className = 'error';
-    h1.textContent = 'sorry player';
+    h1.textContent = 'sorry player something went wrong';
 
-    window.removeEventListener('deviceorientation', onDeviceOrientation);
-  };
-
-  const randomBytes = (size = 2) => {
-    const raw = new Uint8Array(size);
-
-    if (size > 0) {
-      crypto.getRandomValues(raw);
+    if (useMotion) {
+      window.removeEventListener('devicemotion', onDeviceMotion);
+    } else {
+      window.removeEventListener('deviceorientation', onDeviceOrientation);
     }
-
-    const bytes = Buffer.from(raw.buffer);
-    return bytes;
   };
 
-  const playerUuid = randomBytes()
-    .toString('hex')
-    .slice(0, 7);
-
-  // tslint:disable-next-line no-console
-  console.log(
-    `connection:\n${JSON.stringify(
-      {
-        connection: connection.key,
-        player: playerUuid,
-      },
-      null,
-      2,
-    )}\n\n`,
-  );
-
-  player
-    .on('signal', data => {
-      if (data.type !== 'offer') {
-        return;
-      }
-
-      main.className = 'calling';
-      offer.set({ ...data, uid });
-    })
-    .on('connect', () => {
-      main.className = 'connected';
-      h1.textContent = `player: ${playerUuid}`;
-
-      const time = new Date().toLocaleTimeString();
-      player.send(
-        JSON.stringify({
-          width,
-          height,
-          connection: connection.key,
-          player: playerUuid,
-          time,
-        }),
-      );
-
-      window.addEventListener('deviceorientation', onDeviceOrientation);
-    })
-    .on('error', onErrorCloseOrEnd)
-    .on('close', onErrorCloseOrEnd)
-    .on('end', onErrorCloseOrEnd)
-    .on('data', data => {
-      const parsed = JSON.parse(data);
-
-      if (parsed.time) {
-        const message = JSON.stringify(parsed, null, 2);
-        const time = new Date().toLocaleTimeString();
-
-        // tslint:disable-next-line no-console
-        console.log(`player.on 'data':\n/* ${time} */\n${message}\n\n`);
-      }
-    });
-
-  answer.on('value', data => {
+  const onAnswer = (data: DataSnapshot | null) => {
     if (!(data && data.val())) {
       return;
     }
@@ -133,5 +145,19 @@ auth.signInAnonymously().then(userCredential => {
 
     main.className = 'receiving';
     player.signal(data.val());
-  });
+  };
+
+  const playerUuid = randomBytes()
+    .toString('hex')
+    .slice(0, 7);
+
+  player
+    .on('signal', onSignal)
+    .on('connect', onConnect)
+    .on('error', onErrorCloseOrEnd)
+    .on('close', onErrorCloseOrEnd)
+    .on('end', onErrorCloseOrEnd)
+    .on('data', onData);
+
+  answer.on('value', onAnswer);
 });
