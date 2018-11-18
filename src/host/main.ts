@@ -46,14 +46,19 @@ const draw = (t: DOMHighResTimeStamp) => {
       return;
     }
 
+    const p = li.querySelector('p');
+    if (!p) {
+      return;
+    }
+
     const matrix = compose(orientation);
     const xf = `matrix3d(${matrix.join(',')})`;
 
     li.style.transform = xf;
     if (process.env.NODE_ENV === 'development') {
-      li.style.fontFamily = 'monospace';
-      li.style.fontSize = '0.75em';
-      li.innerHTML = matrix.reduce((str, v, i) => {
+      p.style.fontFamily = 'monospace';
+      p.style.fontSize = '0.75em';
+      p.innerHTML = matrix.reduce((str, v, i) => {
         const vf = (Math.abs(v) === v ? '&nbsp;' : '') + v.toFixed(2);
         return str + ((i + 1) % 4 === 0 ? `${vf}<br />` : `${vf}, `);
       }, '');
@@ -143,7 +148,10 @@ auth.signInAnonymously().then(userCredential => {
 
         li.style.width = `${width / 2}px`;
         li.style.height = `${height / 2}px`;
-        li.innerText = player;
+
+        const p = document.createElement('p');
+        li.append(p);
+        p.innerText = player;
 
         const h1 = Math.random() * 360;
         const h2 = (h1 + 120 * (1 + Math.round(Math.random()))) % 360;
