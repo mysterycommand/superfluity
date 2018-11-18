@@ -36,6 +36,7 @@ auth.signInAnonymously().then(userCredential => {
   }
 
   main.className = 'signed-in';
+  h1.textContent = 'logged in';
   const { uid } = userCredential.user;
 
   const connections = database.ref('/connections');
@@ -56,6 +57,7 @@ auth.signInAnonymously().then(userCredential => {
     }
 
     main.className = 'calling';
+    h1.textContent = 'connecting…';
     offer.set({ ...data, uid });
   };
 
@@ -68,7 +70,7 @@ auth.signInAnonymously().then(userCredential => {
 
   const onConnect = () => {
     main.className = 'connected';
-    h1.textContent = `player: ${playerUuid}`;
+    h1.textContent = `${playerUuid}`;
 
     const time = new Date().toLocaleTimeString();
     player.send(
@@ -85,20 +87,24 @@ auth.signInAnonymously().then(userCredential => {
   };
 
   const onData = (data: string) => {
-    const parsed = JSON.parse(data);
+    const { host, time, bkgd } = JSON.parse(data);
 
-    if (parsed.time) {
-      const message = JSON.stringify(parsed, null, 2);
-      const time = new Date().toLocaleTimeString();
+    if (time) {
+      if (process.env.NODE_ENV === 'development') {
+        const message = JSON.stringify({ host, time }, null, 2);
+        // tslint:disable-next-line no-console
+        console.log(`player.on 'data':\n${message}\n\n`);
+      }
 
-      // tslint:disable-next-line no-console
-      console.log(`player.on 'data':\n/* ${time} */\n${message}\n\n`);
+      return;
     }
+
+    main.style.background = bkgd;
   };
 
   const onErrorCloseOrEnd = () => {
     main.className = 'error';
-    h1.textContent = 'sorry player';
+    h1.textContent = 'sorry player something went wrong';
 
     window.removeEventListener('deviceorientation', onDeviceOrientation);
   };

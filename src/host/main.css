@@ -43,4 +43,11 @@ ul {
 li {
   list-style-type: none;
   margin: 4px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #fff;
+  font-weight: bold;
 }
