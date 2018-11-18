@@ -52,15 +52,17 @@ const draw = (t: DOMHighResTimeStamp) => {
     }
 
     const matrix = compose(orientation);
+    matrix[1] = -matrix[1];
+    matrix[4] = -matrix[4];
     const xf = `matrix3d(${matrix.join(',')})`;
 
     li.style.transform = xf;
     if (process.env.NODE_ENV === 'development') {
       p.style.fontFamily = 'monospace';
-      p.style.fontSize = '0.75em';
+      p.style.fontSize = '0.5em';
       p.innerHTML = matrix.reduce((str, v, i) => {
         const vf = (Math.abs(v) === v ? '&nbsp;' : '') + v.toFixed(2);
-        return str + ((i + 1) % 4 === 0 ? `${vf}<br />` : `${vf}, `);
+        return str + ((i + 1) % 4 === 0 ? `${vf}&nbsp;<br />` : `${vf}, `);
       }, '');
     }
   });
@@ -109,6 +111,9 @@ auth.signInAnonymously().then(userCredential => {
     const li = document.createElement('li');
     li.id = `connection-${key}`;
 
+    const c = document.createElement('canvas');
+    li.append(c);
+
     const onSignal = (data: SignalData) => {
       if (data.type !== 'answer') {
         return;
@@ -146,8 +151,11 @@ auth.signInAnonymously().then(userCredential => {
           `\nplayer: ${player} - added\nplayer time: ${time}\nhost time: ${localTime}\n\n`,
         );
 
-        li.style.width = `${width / 2}px`;
-        li.style.height = `${height / 2}px`;
+        li.style.width = c.style.width = `${width / 2}px`;
+        li.style.height = c.style.height = `${height / 2}px`;
+
+        c.width = width / 2;
+        c.height = height / 2;
 
         const p = document.createElement('p');
         li.append(p);
