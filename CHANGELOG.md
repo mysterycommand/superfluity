@@ -1,3 +1,10 @@
+# [1.8.0](https://github.com/fartts/superfluity/compare/v1.7.0...v1.8.0) (2018-11-29)
+
+
+### Features
+
+* **host, player:** add the concept of rooms, allows multiple hosts to exist w/o killing other guest ([ed194f4](https://github.com/fartts/superfluity/commit/ed194f4))
+
 # [1.7.0](https://github.com/fartts/superfluity/compare/v1.6.0...v1.7.0) (2018-11-18)
 
 
