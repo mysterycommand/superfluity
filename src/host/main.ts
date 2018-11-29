@@ -2,13 +2,15 @@ import Peer from 'simple-peer';
 import { toCanvas, QRCodeRenderersOptions } from 'qrcode';
 
 import { auth, database } from '../lib/firebase';
-import { DataSnapshot, SignalData, Guest } from '../lib/common';
+import { DataSnapshot, SignalData, Guest } from '../lib/types';
 
 import './main.css';
 import compose from './compose';
 import makeWorld, { ptm } from './make-world';
 import World from '../box2d/dynamics/world';
 import Vec2 from '../box2d/common/math/vec2';
+
+import randomBytes from '../lib/random-bytes';
 
 const ul = document.querySelector('ul') as HTMLUListElement;
 const pre = document.querySelector('pre') as HTMLPreElement;
@@ -23,12 +25,18 @@ const log = (str: string) => {
 };
 
 const { href } = location;
-const playerUrl = href.replace('host', 'player');
+const playerUrl = href.replace('/host', '/player');
+
+const roomKey = randomBytes()
+  .toString('hex')
+  .slice(0, 7);
+location.hash = `#${roomKey}`;
+
 const qrcodeOpts: QRCodeRenderersOptions = {
   color: { light: '#ffffff66' },
 };
 
-toCanvas(canvas, playerUrl, qrcodeOpts, error => {
+toCanvas(canvas, `${playerUrl}#${roomKey}`, qrcodeOpts, error => {
   if (error) {
     log(`qrcode error:\n${error.message}`);
     return;
@@ -73,27 +81,31 @@ const draw = (t: DOMHighResTimeStamp) => {
 
 requestAnimationFrame(draw);
 
+const removeGuest = (key: string) => {
+  if (guests[key]) {
+    const { host } = guests[key];
+    host.destroy();
+
+    delete guests[key];
+  }
+
+  const li = document.getElementById(`connection-${key}`);
+  if (li) {
+    li.remove();
+  }
+};
+
 auth.signInAnonymously().then(userCredential => {
   if (!(userCredential && userCredential.user)) {
     return;
   }
 
   const { uid } = userCredential.user;
-  const connections = database.ref('/connections');
 
-  const removeGuest = (key: string) => {
-    if (guests[key]) {
-      const { host } = guests[key];
-      host.destroy();
+  const room = database.ref(`/rooms/${roomKey}`);
+  const connections = room.child('/connections').ref;
 
-      delete guests[key];
-    }
-
-    const li = document.getElementById(`connection-${key}`);
-    if (li) {
-      li.remove();
-    }
-  };
+  room.onDisconnect().set(null);
 
   const onConnectionAdded = (connection: DataSnapshot | null) => {
     if (!(connection && connection.key)) {

@@ -4,33 +4,25 @@ import 'firebase/database';
 import Peer from 'simple-peer';
 
 import { auth, database } from '../lib/firebase';
-import { DataSnapshot, SignalData } from '../lib/common';
+import { DataSnapshot, SignalData } from '../lib/types';
 
 import PoseSensor from 'cardboard-vr-display/src/sensor-fusion/fusion-pose-sensor';
 
 import './main.css';
+import randomBytes from '../lib/random-bytes';
 
 const main = document.querySelector('main') as HTMLMainElement;
 const h1 = document.querySelector('h1') as HTMLHeadingElement;
 const button = document.querySelector('button') as HTMLButtonElement;
 
 const { innerWidth: width, innerHeight: height } = window;
+const { hash } = location;
 
 main.className = 'loading';
 button.addEventListener('click', event => {
   event.preventDefault();
   location.reload(true);
 });
-
-const randomBytes = (size = 2) => {
-  const raw = new Uint8Array(size);
-
-  if (size > 0) {
-    crypto.getRandomValues(raw);
-  }
-
-  return Buffer.from(raw.buffer);
-};
 
 auth.signInAnonymously().then(userCredential => {
   if (!(userCredential && userCredential.user)) {
@@ -41,7 +33,7 @@ auth.signInAnonymously().then(userCredential => {
   h1.innerText = 'logged in';
   const { uid } = userCredential.user;
 
-  const connections = database.ref('/connections');
+  const connections = database.ref(`/rooms/${hash.slice(1)}/connections`);
   const connection = connections.push({
     createdAt: firebase.database.ServerValue.TIMESTAMP,
   });
@@ -56,7 +48,7 @@ auth.signInAnonymously().then(userCredential => {
   let frameId = -1;
 
   const send = (t: DOMHighResTimeStamp) => {
-    requestAnimationFrame(send);
+    frameId = requestAnimationFrame(send);
     const o = poseSensor.getOrientation();
     player.send(JSON.stringify({ orientation: [].slice.call(o) }));
   };
