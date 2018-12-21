@@ -9194,10 +9194,10 @@ semantic-release-plugin-decorators@^2.0.0:
     import-from "^2.1.0"
     lodash "^4.17.4"
 
-semantic-release@15.12.0:
-  version "15.12.0"
-  resolved "https://registry.yarnpkg.com/semantic-release/-/semantic-release-15.12.0.tgz#061f390bbf999ae56ae52a71f0a986659bbe556d"
-  integrity sha512-s8JQ0twxSTat4aIKy8AVPm6gP+2OlkMyyTGeeWFopOXQVa3Bg0LPNjdhsUL90MHvh9aVy9k0/ym4DWmOcGxOMQ==
+semantic-release@15.13.0:
+  version "15.13.0"
+  resolved "https://registry.yarnpkg.com/semantic-release/-/semantic-release-15.13.0.tgz#5e2cafb9c9d4114d97d639c701e13a74bc2eb214"
+  integrity sha512-ZTMaRA4v2t6XLj9uPVQx8w499EngMhE7fJtj4oX3XvH2QpCjiZQkvu+6v5gK9XYqMcimIcbY3hqcOInJMP+T1g==
   dependencies:
     "@semantic-release/commit-analyzer" "^6.1.0"
     "@semantic-release/error" "^2.2.0"
