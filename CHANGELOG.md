@@ -1,3 +1,10 @@
+## [1.8.1](https://github.com/fartts/superfluity/compare/v1.8.0...v1.8.1) (2019-04-15)
+
+
+### Bug Fixes
+
+* **package.json:** uwe the patched version of sr-gh-pr ([8b42c54](https://github.com/fartts/superfluity/commit/8b42c54))
+
 # [1.8.0](https://github.com/fartts/superfluity/compare/v1.7.0...v1.8.0) (2018-11-29)
 
 
