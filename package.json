@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "cardboard-vr-display": "1.0.16",
-    "firebase": "6.0.2",
+    "firebase": "6.0.4",
     "qrcode": "1.3.3",
     "simple-peer": "9.3.0"
   },
