@@ -11,7 +11,7 @@ import PoseSensor from 'cardboard-vr-display/src/sensor-fusion/fusion-pose-senso
 import './main.css';
 import randomBytes from '../lib/random-bytes';
 
-const main = document.querySelector('main') as HTMLMainElement;
+const main = document.querySelector('main') as HTMLElement;
 const h1 = document.querySelector('h1') as HTMLHeadingElement;
 const button = document.querySelector('button') as HTMLButtonElement;
 
