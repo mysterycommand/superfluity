@@ -44,7 +44,12 @@ auth.signInAnonymously().then(userCredential => {
   connection.onDisconnect().set(null);
 
   const player = new Peer({ initiator: true, trickle: false });
-  const poseSensor = new PoseSensor(0.98, 0.04, false, false);
+  const poseSensor = new PoseSensor(
+    0.98,
+    0.04,
+    false,
+    process.env.NODE_ENV === 'development',
+  );
   let frameId = -1;
 
   const send = (t: DOMHighResTimeStamp) => {
