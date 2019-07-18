@@ -1,3 +1,10 @@
+## [1.8.2](https://github.com/fartts/superfluity/compare/v1.8.1...v1.8.2) (2019-07-18)
+
+
+### Bug Fixes
+
+* **player/main:** maybe HTMLMainElement was overspecified and removed intentionally? ([bf822ef](https://github.com/fartts/superfluity/commit/bf822ef))
+
 ## [1.8.1](https://github.com/fartts/superfluity/compare/v1.8.0...v1.8.1) (2019-04-15)
 
 
