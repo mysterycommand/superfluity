@@ -7,7 +7,8 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "clean": "rm -rf .cache/ coverage/ dist/ node_modules/",
+    "reset": "yarn clean node_modules/ && yarn install",
+    "clean": "rm -rf .cache/ coverage/ dist/",
     "build": "parcel build src/**/*.html --public-url /superfluity --experimental-scope-hoisting",
     "start": "parcel src/**/*.html",
     "lint": "tslint 'src/**/*.ts'",
@@ -15,9 +16,9 @@
     "coverage": "open coverage/lcov-report/index.html"
   },
   "engines": {
-    "node": "10.15.3",
-    "npm": "6.9.0",
-    "yarn": "1.15.2"
+    "node": "10.16.0",
+    "npm": "6.10.1",
+    "yarn": "1.17.3"
   },
   "config": {
     "commitizen": {
@@ -32,6 +33,7 @@
   },
   "devDependencies": {
     "@babel/core": "7.5.4",
+    "@babel/preset-env": "7.5.4",
     "@babel/preset-typescript": "7.3.3",
     "@semantic-release/changelog": "3.0.4",
     "@semantic-release/commit-analyzer": "6.2.0",

@@ -11,7 +11,7 @@ import PoseSensor from 'cardboard-vr-display/src/sensor-fusion/fusion-pose-senso
 import './main.css';
 import randomBytes from '../lib/random-bytes';
 
-const main = document.querySelector('main') as HTMLMainElement;
+const main = document.querySelector('main') as HTMLElement;
 const h1 = document.querySelector('h1') as HTMLHeadingElement;
 const button = document.querySelector('button') as HTMLButtonElement;
 
@@ -44,7 +44,12 @@ auth.signInAnonymously().then(userCredential => {
   connection.onDisconnect().set(null);
 
   const player = new Peer({ initiator: true, trickle: false });
-  const poseSensor = new PoseSensor(0.98, 0.04, false, false);
+  const poseSensor = new PoseSensor(
+    0.98,
+    0.04,
+    false,
+    process.env.NODE_ENV === 'development',
+  );
   let frameId = -1;
 
   const send = (t: DOMHighResTimeStamp) => {
