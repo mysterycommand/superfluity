@@ -1,3 +1,16 @@
+# [1.9.0](https://github.com/fartts/superfluity/compare/v1.8.2...v1.9.0) (2019-07-27)
+
+
+### Bug Fixes
+
+* **host/main.ts:** fixes a double room key issue ([905c20a](https://github.com/fartts/superfluity/commit/905c20a))
+* **package.json:** enable https in dev ([9253861](https://github.com/fartts/superfluity/commit/9253861)), closes [/developer.apple.com/documentation/safari_release_notes/safari_12_1_release_notes#3130296](https://github.com//developer.apple.com/documentation/safari_release_notes/safari_12_1_release_notes/issues/3130296)
+
+
+### Features
+
+* **host/main.ts:** use the same bytes every time in dev ([e7b8249](https://github.com/fartts/superfluity/commit/e7b8249))
+
 ## [1.8.2](https://github.com/fartts/superfluity/compare/v1.8.1...v1.8.2) (2019-07-18)
 
 
