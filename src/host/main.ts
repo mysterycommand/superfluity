@@ -24,12 +24,12 @@ const log = (str: string) => {
   });
 };
 
-const { href } = location;
-const playerUrl = href.replace('/host', '/player');
+const { origin, pathname } = location;
+const playerUrl = `${origin}${pathname}`.replace('/host', '/player');
 
-const roomKey = randomBytes()
-  .toString('hex')
-  .slice(0, 7);
+const bytes =
+  process.env.NODE_ENV === 'development' ? Buffer.from([0, 0]) : randomBytes();
+const roomKey = bytes.toString('hex').slice(0, 7);
 location.hash = `#${roomKey}`;
 
 const qrcodeOpts: QRCodeRenderersOptions = {

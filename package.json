@@ -10,7 +10,7 @@
     "reset": "yarn clean node_modules/ && yarn install",
     "clean": "rm -rf .cache/ coverage/ dist/",
     "build": "parcel build src/**/*.html --public-url /superfluity --experimental-scope-hoisting",
-    "start": "parcel src/**/*.html",
+    "start": "parcel src/**/*.html --https",
     "lint": "tslint 'src/**/*.ts'",
     "test": "jest",
     "coverage": "open coverage/lcov-report/index.html"
