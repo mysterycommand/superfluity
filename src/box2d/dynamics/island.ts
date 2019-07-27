@@ -311,7 +311,6 @@ export default class Island {
     }
 
     for (let i = 0; i < this.m_contactCount; ++i) {
-      const c = this.m_contacts[i];
       const cc = constraints[i];
 
       for (let j = 0; j < cc.pointCount; ++j) {
@@ -319,6 +318,7 @@ export default class Island {
         Island.s_impulse.tangentImpulses[j] = cc.points[j].tangentImpulse;
       }
 
+      // const c = this.m_contacts[i];
       // this.m_listener.PostSolve(c, Island.s_impulse);
     }
   }
