@@ -24,8 +24,8 @@ const log = (str: string) => {
   });
 };
 
-const { href } = location;
-const playerUrl = href.replace('/host', '/player');
+const { origin, pathname } = location;
+const playerUrl = `${origin}${pathname}`.replace('/host', '/player');
 
 const roomKey = randomBytes()
   .toString('hex')
