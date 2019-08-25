@@ -13,8 +13,6 @@ module.exports = {
   moduleNameMapper: {
     '^.+\\.s?css$': 'identity-obj-proxy',
   },
+  preset: 'ts-jest',
   testMatch: ['<rootDir>/src/**/?(*.)test?(s).ts'],
-  transform: {
-    '^.+\\.ts$': 'ts-jest',
-  },
 };
