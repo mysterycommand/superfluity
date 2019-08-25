@@ -1,33 +1,37 @@
 {
   "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
-    "declaration": false,
-    "esModuleInterop": true,
     "lib": [
       "dom",
       "dom.iterable",
-      "es2015",
-      "es2016",
-      "es2017",
-      "es2018",
-      "es2019",
-      "scripthost",
-      "webworker"
+      "esnext"
     ],
-    "module": "es2015",
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "esnext",
     "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
     "noEmit": true,
+    "jsx": "preserve",
+    "target": "esnext",
     "noImplicitAny": true,
     "noUnusedLocals": true,
-    "strict": true,
-    "target": "es2015",
+    "declaration": false,
     "types": [
       "jest",
       "node"
     ]
   },
+  "include": [
+    "src"
+  ],
   "exclude": [
     "node_modules",
+    "**/*.test.ts",
     "dist"
   ]
 }
