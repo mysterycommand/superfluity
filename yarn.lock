@@ -9496,10 +9496,10 @@ signale@^1.2.1:
     figures "^2.0.0"
     pkg-conf "^2.1.0"
 
-simple-peer@9.6.0:
-  version "9.6.0"
-  resolved "https://registry.yarnpkg.com/simple-peer/-/simple-peer-9.6.0.tgz#1560653c2f5360c122f7912cfdb32e8124f5e2c4"
-  integrity sha512-NYqSKPu75xhkZYKGJhCbLCG5kfBtDHf8U9ddk4EKFfYNU7XgIisov+V8wMbVVgyMCfn8pm8uOqQQmE50FPDFWA==
+simple-peer@9.6.1:
+  version "9.6.1"
+  resolved "https://registry.yarnpkg.com/simple-peer/-/simple-peer-9.6.1.tgz#1e4b0b4c803904865f2c8b1b3c68b40398345ec5"
+  integrity sha512-/8IOtaXnnVhCkgHFBQKZ+hfx/s0+Ybo0Ijon7OrKUuEf8dEcRZJrrfjkNNgzogLM/mixI2EvnTSpOiKR6cts+w==
   dependencies:
     debug "^4.0.1"
     get-browser-rtc "^1.0.0"
