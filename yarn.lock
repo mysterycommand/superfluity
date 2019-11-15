@@ -1616,10 +1616,10 @@
   resolved "https://registry.yarnpkg.com/@types/retry/-/retry-0.12.0.tgz#2b35eccfcee7d38cd72ad99232fbd58bffb3c84d"
   integrity sha512-wWKOClTTiizcZhXnPY4wikVAwmdYHp8q6DmC+EJUzAMsycb7HB32Kh9RN4+0gExjmPmZSAQjgURXIGATPegAvA==
 
-"@types/simple-peer@6.1.6":
-  version "6.1.6"
-  resolved "https://registry.yarnpkg.com/@types/simple-peer/-/simple-peer-6.1.6.tgz#a1a1f4793f6a3f7ec17df2056fe3a036a1bc2313"
-  integrity sha512-jnktVe4nDkNAIf/5brRQ4VqMP845dtRCrFMRagOxiTdC9gZ3rpnidt8EGR89b55Wtol+otYEJveFkEy3IpxA0Q==
+"@types/simple-peer@9.6.0":
+  version "9.6.0"
+  resolved "https://registry.yarnpkg.com/@types/simple-peer/-/simple-peer-9.6.0.tgz#b5828d835b7f42dde27db584ba127e7a9f9072f4"
+  integrity sha512-X2y6s+vE/3j03hkI90oqld2JH2J/m1L7yFCYYPyFV/whrOK1h4neYvJL3GIE+UcACJacXZqzdmDKudwec18RbA==
   dependencies:
     "@types/node" "*"
 
