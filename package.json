@@ -26,25 +26,25 @@
     }
   },
   "dependencies": {
-    "cardboard-vr-display": "1.0.16",
-    "firebase": "7.3.0",
-    "qrcode": "1.4.2",
-    "simple-peer": "9.6.0"
+    "cardboard-vr-display": "1.0.18",
+    "firebase": "7.4.0",
+    "qrcode": "1.4.4",
+    "simple-peer": "9.6.2"
   },
   "devDependencies": {
-    "@babel/core": "7.6.4",
-    "@babel/preset-env": "7.6.3",
-    "@babel/preset-typescript": "7.6.0",
+    "@babel/core": "7.7.2",
+    "@babel/preset-env": "7.7.1",
+    "@babel/preset-typescript": "7.7.2",
     "@semantic-release/changelog": "3.0.5",
     "@semantic-release/commit-analyzer": "6.3.3",
     "@semantic-release/git": "7.0.18",
     "@semantic-release/github": "5.5.5",
     "@semantic-release/npm": "5.3.4",
-    "@semantic-release/release-notes-generator": "7.3.2",
-    "@types/jest": "24.0.22",
-    "@types/node": "12.12.7",
+    "@semantic-release/release-notes-generator": "7.3.3",
+    "@types/jest": "24.0.23",
+    "@types/node": "12.12.8",
     "@types/qrcode": "1.3.4",
-    "@types/simple-peer": "6.1.6",
+    "@types/simple-peer": "9.6.0",
     "commitizen": "4.0.3",
     "cz-conventional-changelog": "3.0.2",
     "glslify-bundle": "5.1.1",
@@ -52,13 +52,13 @@
     "identity-obj-proxy": "3.0.0",
     "jest": "24.9.0",
     "parcel-bundler": "1.12.4",
-    "prettier": "1.18.2",
-    "semantic-release": "15.13.30",
+    "prettier": "1.19.1",
+    "semantic-release": "15.13.31",
     "semantic-release-github-pr": "https://github.com/mysterycommand/semantic-release-github-pr.git#fix/34-and-35",
     "ts-jest": "24.1.0",
-    "tslint": "5.20.0",
+    "tslint": "5.20.1",
     "tslint-config-prettier": "1.18.0",
     "tslint-plugin-prettier": "2.0.1",
-    "typescript": "3.6.4"
+    "typescript": "3.7.2"
   }
 }
