@@ -32,7 +32,7 @@
     "simple-peer": "9.6.2"
   },
   "devDependencies": {
-    "@babel/core": "7.9.0",
+    "@babel/core": "7.10.0",
     "@babel/preset-env": "7.9.5",
     "@babel/preset-typescript": "7.9.0",
     "@semantic-release/changelog": "5.0.1",
