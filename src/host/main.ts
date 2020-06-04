@@ -36,7 +36,7 @@ const qrcodeOpts: QRCodeRenderersOptions = {
   color: { light: '#ffffff66' },
 };
 
-toCanvas(canvas, `${playerUrl}#${roomKey}`, qrcodeOpts, error => {
+toCanvas(canvas, `${playerUrl}#${roomKey}`, qrcodeOpts, (error) => {
   if (error) {
     log(`qrcode error:\n${error.message}`);
     return;
@@ -95,7 +95,7 @@ const removeGuest = (key: string) => {
   }
 };
 
-auth.signInAnonymously().then(userCredential => {
+auth.signInAnonymously().then((userCredential) => {
   if (!(userCredential && userCredential.user)) {
     return;
   }
