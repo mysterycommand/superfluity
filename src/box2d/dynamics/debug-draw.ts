@@ -107,7 +107,7 @@ export default class DebugDraw {
   }
 
   public DrawPolygon(
-    vertices: Array<{ x: number; y: number }>,
+    vertices: { x: number; y: number }[],
     vertexCount = 0,
     color: Color,
   ) {
@@ -130,7 +130,7 @@ export default class DebugDraw {
   }
 
   public DrawSolidPolygon(
-    vertices: Array<{ x: number; y: number }>,
+    vertices: { x: number; y: number }[],
     vertexCount = 0,
     color: Color,
   ) {
