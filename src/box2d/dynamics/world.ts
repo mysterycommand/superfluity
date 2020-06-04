@@ -581,7 +581,7 @@ export default class World {
 
   public QueryAABB(cb: (proxy: DistanceProxy) => boolean, aabb: Aabb) {
     const broadPhase = this.m_contactManager.m_broadPhase;
-    broadPhase.Query(proxy => cb(broadPhase.GetUserData(proxy)), aabb);
+    broadPhase.Query((proxy) => cb(broadPhase.GetUserData(proxy)), aabb);
   }
 
   public QueryShape(
@@ -598,7 +598,7 @@ export default class World {
     const aabb = new Aabb();
     shape.ComputeAABB(aabb, transform);
 
-    broadPhase.Query(proxy => {
+    broadPhase.Query((proxy) => {
       const fixture =
         broadPhase.GetUserData(proxy) instanceof Fixture
           ? broadPhase.GetUserData(proxy)
@@ -622,7 +622,7 @@ export default class World {
     aabb.lowerBound.Set(p.x - b2_linearSlop, p.y - b2_linearSlop);
     aabb.upperBound.Set(p.x + b2_linearSlop, p.y + b2_linearSlop);
 
-    broadPhase.Query(proxy => {
+    broadPhase.Query((proxy) => {
       const fixture =
         broadPhase.GetUserData(proxy) instanceof Fixture
           ? broadPhase.GetUserData(proxy)

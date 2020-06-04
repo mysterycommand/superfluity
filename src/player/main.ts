@@ -19,12 +19,12 @@ const { innerWidth: width, innerHeight: height } = window;
 const { hash } = location;
 
 main.className = 'loading';
-button.addEventListener('click', event => {
+button.addEventListener('click', (event) => {
   event.preventDefault();
   location.reload(true);
 });
 
-auth.signInAnonymously().then(userCredential => {
+auth.signInAnonymously().then((userCredential) => {
   if (!(userCredential && userCredential.user)) {
     return;
   }
@@ -122,9 +122,7 @@ auth.signInAnonymously().then(userCredential => {
     player.signal(data.val());
   };
 
-  const playerUuid = randomBytes()
-    .toString('hex')
-    .slice(0, 7);
+  const playerUuid = randomBytes().toString('hex').slice(0, 7);
 
   player
     .on('signal', onSignal)

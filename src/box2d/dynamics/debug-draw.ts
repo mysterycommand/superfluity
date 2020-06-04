@@ -32,8 +32,9 @@ export default class DebugDraw {
   public m_drawFlags = 0;
 
   public _color(rgb: number, a: number) {
-    return `rgba(${(rgb & 0xff0000) >> 16},${(rgb & 0xff00) >> 8},${rgb &
-      0xff},${a})`;
+    return `rgba(${(rgb & 0xff0000) >> 16},${(rgb & 0xff00) >> 8},${
+      rgb & 0xff
+    },${a})`;
   }
 
   public SetFlags(flags = 0) {
@@ -106,7 +107,7 @@ export default class DebugDraw {
   }
 
   public DrawPolygon(
-    vertices: Array<{ x: number; y: number }>,
+    vertices: { x: number; y: number }[],
     vertexCount = 0,
     color: Color,
   ) {
@@ -129,7 +130,7 @@ export default class DebugDraw {
   }
 
   public DrawSolidPolygon(
-    vertices: Array<{ x: number; y: number }>,
+    vertices: { x: number; y: number }[],
     vertexCount = 0,
     color: Color,
   ) {
