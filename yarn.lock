@@ -2811,10 +2811,10 @@ capture-stack-trace@^1.0.0:
   resolved "https://registry.yarnpkg.com/capture-stack-trace/-/capture-stack-trace-1.0.1.tgz#a6c0bbe1f38f3aa0b92238ecb6ff42c344d4135d"
   integrity sha512-mYQLZnx5Qt1JgB1WEiMCf2647plpGeQ2NMR/5L0HNZzGQo4fuSPnK+wjfPnKZV0aiJDgzmWqqkV/g7JD+DW0qw==
 
-cardboard-vr-display@1.0.18:
-  version "1.0.18"
-  resolved "https://registry.yarnpkg.com/cardboard-vr-display/-/cardboard-vr-display-1.0.18.tgz#50d0eadcb3a3b3f172f80ba213c50c602b2637ab"
-  integrity sha512-G1UEitQBT3pODLnMx37xv9JyZktCBTkwjxS4Vz9KmYL0Ln+Crm/CI7o4WEqAyS6xZjxR3cAvcClou1edX/JUbA==
+cardboard-vr-display@1.0.19:
+  version "1.0.19"
+  resolved "https://registry.yarnpkg.com/cardboard-vr-display/-/cardboard-vr-display-1.0.19.tgz#81dcde1804b329b8228b757ac00e1fd2afa9d748"
+  integrity sha512-+MjcnWKAkb95p68elqZLDPzoiF/dGncQilLGvPBM5ZorABp/ao3lCs7nnRcYBckmuNkg1V/5rdGDKoUaCVsHzQ==
   dependencies:
     gl-preserve-state "^1.0.0"
     nosleep.js "^0.7.0"
