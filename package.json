@@ -52,7 +52,7 @@
     "identity-obj-proxy": "3.0.0",
     "jest": "26.4.2",
     "parcel-bundler": "1.12.4",
-    "prettier": "2.0.5",
+    "prettier": "2.1.0",
     "semantic-release": "17.1.1",
     "semantic-release-github-pr": "https://github.com/mysterycommand/semantic-release-github-pr.git#fix/34-and-35",
     "ts-jest": "26.2.0",
