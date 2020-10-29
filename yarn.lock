@@ -3693,12 +3693,12 @@ debug@3.1.0:
   dependencies:
     ms "2.0.0"
 
-debug@4, debug@^4.0.0, debug@^4.0.1, debug@^4.1.0, debug@^4.1.1:
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/debug/-/debug-4.1.1.tgz#3b72260255109c6b589cee050f1d516139664791"
-  integrity sha512-pYAIzeRo8J6KPEaJ0VWOh5Pzkbw/RetuzehGM7QRRX5he4fPHx2rdKMB256ehJCkX+XRQm16eZLqLNS8RSZXZw==
+debug@4, debug@^4.0.0, debug@^4.1.0, debug@^4.1.1, debug@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-4.2.0.tgz#7f150f93920e94c58f5574c2fd01a3110effe7f1"
+  integrity sha512-IX2ncY78vDTjZMFUdmsvIRFY2Cf4FnD0wRs+nQwJU8Lu99/tPFdb0VybiiMTPe3I6rQmwsqQqRBvxU+bZ/I8sg==
   dependencies:
-    ms "^2.1.1"
+    ms "2.1.2"
 
 debug@^3.1.0:
   version "3.2.6"
@@ -4105,6 +4105,11 @@ err-code@^1.0.0:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/err-code/-/err-code-1.1.2.tgz#06e0116d3028f6aef4806849eb0ea6a748ae6960"
   integrity sha1-BuARbTAo9q70gGhJ6w6mp0iuaWA=
+
+err-code@^2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/err-code/-/err-code-2.0.3.tgz#23c2f3b756ffdfc608d30e27c9a941024807e7f9"
+  integrity sha512-2bmlRpNKBxT/CRmPOlyISQpNj+qSeYvcym/uT0Jx2bMOlKLtSy1ZmLuVxSEKKyor/N5yhvp/ZiG1oE3DEYMSFA==
 
 errno@~0.1.7:
   version "0.1.7"
@@ -4805,7 +4810,7 @@ gentle-fs@^2.3.0, gentle-fs@^2.3.1:
     read-cmd-shim "^1.0.1"
     slide "^1.1.6"
 
-get-browser-rtc@^1.0.0:
+get-browser-rtc@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/get-browser-rtc/-/get-browser-rtc-1.0.2.tgz#bbcd40c8451a7ed4ef5c373b8169a409dd1d11d9"
   integrity sha1-u81AyEUaftTvXDc7gWmkCd0dEdk=
@@ -7426,7 +7431,7 @@ ms@2.1.1:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.1.tgz#30a5864eb3ebb0a66f2ebe6d727af06a09d86e0a"
   integrity sha512-tgp+dl5cGk28utYktBsrFqA7HKgrhgPsg6Z/EfhWI4gl1Hwq8B/GmY/0oXZ6nF8hDVesS/FpnYaD/kOWhYQvyg==
 
-ms@^2.0.0, ms@^2.1.1:
+ms@2.1.2, ms@^2.0.0, ms@^2.1.1:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.2.tgz#d09d1f357b443f493382a8eb3ccd183872ae6009"
   integrity sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==
@@ -9155,10 +9160,10 @@ querystring@0.2.0:
   resolved "https://registry.yarnpkg.com/querystring/-/querystring-0.2.0.tgz#b209849203bb25df820da756e747005878521620"
   integrity sha1-sgmEkgO7Jd+CDadW50cAWHhSFiA=
 
-queue-microtask@^1.1.0:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/queue-microtask/-/queue-microtask-1.1.2.tgz#139bf8186db0c545017ec66c2664ac646d5c571e"
-  integrity sha512-F9wwNePtXrzZenAB3ax0Y8TSKGvuB7Qw16J30hspEUTbfUM+H827XyN3rlpwhVmtm5wuZtbKIHjOnwDn7MUxWQ==
+queue-microtask@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/queue-microtask/-/queue-microtask-1.2.0.tgz#f27d002cbfac741072afa0e9af3a119b0e8724a3"
+  integrity sha512-J95OVUiS4b8qqmpqhCodN8yPpHG2mpZUPQ8tDGyIY0VhM+kBHszOuvsMJVGNQ1OH2BnTFbqz45i+2jGpDw9H0w==
 
 quick-lru@^1.0.0:
   version "1.1.0"
@@ -9184,7 +9189,7 @@ ramda@^0.25.0:
   resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.25.0.tgz#8fdf68231cffa90bc2f9460390a0cb74a29b29a9"
   integrity sha512-GXpfrYVPwx3K7RQ6aYT8KPS8XViSXUVJT1ONhoKPE9VAleW42YE+U+8VEyGWt41EnEQW7gwecYJriTI0pKoecQ==
 
-randombytes@^2.0.0, randombytes@^2.0.1, randombytes@^2.0.3, randombytes@^2.0.5:
+randombytes@^2.0.0, randombytes@^2.0.1, randombytes@^2.0.5, randombytes@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/randombytes/-/randombytes-2.1.0.tgz#df6f84372f0270dc65cdf6291349ab7a473d4f2a"
   integrity sha512-vYl3iOX+4CKUWuxGi9Ukhie6fsqXqS9FE2Zaic4tNFD2N2QQaXOMFbuKK4QmDHC0JO6B1Zp41J0LpT0oR68amQ==
@@ -9339,7 +9344,7 @@ read@1, read@~1.0.1, read@~1.0.7:
     string_decoder "~1.1.1"
     util-deprecate "~1.0.1"
 
-"readable-stream@2 || 3", readable-stream@^3.1.1, readable-stream@^3.4.0, readable-stream@^3.6.0:
+"readable-stream@2 || 3", readable-stream@^3.1.1, readable-stream@^3.6.0:
   version "3.6.0"
   resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-3.6.0.tgz#337bbda3adc0706bd3e024426a286d4b4b2c9198"
   integrity sha512-BViHy7LKeTz4oNnkcLJ+lVSL6vpiFeX6/d3oSH8zCW7UxP2onchk+vTGB143xuFjHS3deTgkKoXXymXqymiIdA==
@@ -9993,16 +9998,17 @@ signale@^1.2.1:
     figures "^2.0.0"
     pkg-conf "^2.1.0"
 
-simple-peer@9.7.2:
-  version "9.7.2"
-  resolved "https://registry.yarnpkg.com/simple-peer/-/simple-peer-9.7.2.tgz#8cd9cb156bf456ad9c3d379119f0c39dfb3b20f7"
-  integrity sha512-xeMyxa9B4V0eA6mf17fVr8nm2QhAYFu+ZZv8zkSFFTjJETGF227CshwobrIYZuspJglMD63egcevQXGOrTIsuA==
+simple-peer@9.8.0:
+  version "9.8.0"
+  resolved "https://registry.yarnpkg.com/simple-peer/-/simple-peer-9.8.0.tgz#e84a6af664b0eb42dd1cb2349a69c7ad20051d1d"
+  integrity sha512-GK1KhJvEwtZILr6zWvQR3AnBNpLrxwr6b5wcduFxOrQNGLg9Hn92eFsHD7RYPnnWsapxGXFMJcBjNuicqBDRIQ==
   dependencies:
-    debug "^4.0.1"
-    get-browser-rtc "^1.0.0"
-    queue-microtask "^1.1.0"
-    randombytes "^2.0.3"
-    readable-stream "^3.4.0"
+    debug "^4.2.0"
+    err-code "^2.0.3"
+    get-browser-rtc "^1.0.2"
+    queue-microtask "^1.2.0"
+    randombytes "^2.1.0"
+    readable-stream "^3.6.0"
 
 simple-swizzle@^0.2.2:
   version "0.2.2"
