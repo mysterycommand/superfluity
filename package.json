@@ -44,7 +44,7 @@
     "@types/jest": "26.0.20",
     "@types/node": "14.14.28",
     "@types/qrcode": "1.4.0",
-    "@types/simple-peer": "9.6.1",
+    "@types/simple-peer": "9.6.2",
     "commitizen": "4.2.3",
     "cz-conventional-changelog": "3.3.0",
     "glslify-bundle": "5.1.1",
