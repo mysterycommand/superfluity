@@ -29,7 +29,7 @@
     "cardboard-vr-display": "1.0.19",
     "firebase": "8.4.1",
     "qrcode": "1.4.4",
-    "simple-peer": "9.10.0"
+    "simple-peer": "9.11.0"
   },
   "devDependencies": {
     "@babel/core": "7.13.15",
