@@ -55,7 +55,7 @@
     "prettier": "2.2.1",
     "semantic-release": "17.4.2",
     "semantic-release-github-pr": "https://github.com/mysterycommand/semantic-release-github-pr.git#fix/34-and-35",
-    "ts-jest": "26.5.4",
+    "ts-jest": "26.5.5",
     "tslint": "6.1.3",
     "tslint-config-prettier": "1.18.0",
     "tslint-plugin-prettier": "2.3.0",
