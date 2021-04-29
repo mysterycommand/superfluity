@@ -1,0 +1,47 @@
+version: 2
+updates:
+- package-ecosystem: npm
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "08:00"
+    timezone: US/Eastern
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: semantic-release
+    versions:
+    - "< 15.12.3, >= 15.12.2.a"
+  - dependency-name: semantic-release
+    versions:
+    - "< 15.12.4, >= 15.12.3.a"
+  - dependency-name: semantic-release
+    versions:
+    - "< 15.12.5, >= 15.12.4.a"
+  - dependency-name: semantic-release
+    versions:
+    - "< 15.13.1, >= 15.13.0.a"
+  - dependency-name: semantic-release
+    versions:
+    - "< 15.13.2, >= 15.13.1.a"
+  - dependency-name: semantic-release
+    versions:
+    - "< 15.13.3, >= 15.13.2.a"
+  - dependency-name: semantic-release
+    versions:
+    - "< 15.13.4, >= 15.13.3.a"
+  - dependency-name: semantic-release
+    versions:
+    - ">= 15.13.4.a, < 15.13.5"
+  - dependency-name: semantic-release
+    versions:
+    - ">= 15.13.7.a, < 15.13.8"
+  - dependency-name: semantic-release
+    versions:
+    - ">= 15.13.8.a, < 15.13.9"
+  - dependency-name: "@types/node"
+    versions:
+    - 15.0.0
+  - dependency-name: "@babel/preset-env"
+    versions:
+    - 7.13.10
+    - 7.13.9
