@@ -2113,10 +2113,10 @@
   resolved "https://registry.yarnpkg.com/@types/retry/-/retry-0.12.0.tgz#2b35eccfcee7d38cd72ad99232fbd58bffb3c84d"
   integrity sha512-wWKOClTTiizcZhXnPY4wikVAwmdYHp8q6DmC+EJUzAMsycb7HB32Kh9RN4+0gExjmPmZSAQjgURXIGATPegAvA==
 
-"@types/simple-peer@9.11.0":
-  version "9.11.0"
-  resolved "https://registry.yarnpkg.com/@types/simple-peer/-/simple-peer-9.11.0.tgz#72f369cb2bebd0023b265aa726d352bf744f9f4b"
-  integrity sha512-HjIGo3D5I2tdtl2FpngcDYHgqlDxZuZqmQn7f0TQrpYI4ZbuHbBg9THoiDjzKjCzZsHrG5Ag53m5O/cBYfjQWA==
+"@types/simple-peer@9.11.1":
+  version "9.11.1"
+  resolved "https://registry.yarnpkg.com/@types/simple-peer/-/simple-peer-9.11.1.tgz#bef6ff1e75178d83438e33aa6a4df2fd98fded1d"
+  integrity sha512-Pzqbau/WlivSXdRC0He2Wz/ANj2wbi4gzJrtysZz93jvOyI2jo/ibMjUe6AvPllFl/UO6QXT/A0Rcp44bDQB5A==
   dependencies:
     "@types/node" "*"
 
