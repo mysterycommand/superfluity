@@ -43,7 +43,7 @@
     "@semantic-release/release-notes-generator": "9.0.3",
     "@types/jest": "26.0.24",
     "@types/node": "16.0.0",
-    "@types/qrcode": "1.4.0",
+    "@types/qrcode": "1.4.1",
     "@types/simple-peer": "9.11.1",
     "commitizen": "4.2.4",
     "cz-conventional-changelog": "3.3.0",
